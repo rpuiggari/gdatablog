@@ -9,7 +9,7 @@
 <meta name="author" content="Piru Puiggari">
 <meta name="dcterms.date" content="2024-08-23">
 
-<title>Improving Foreclosure Timeline Predictions(Simple Explanation) – gdatablog</title>
+<title>Evaluating Predictive Model Accuracy in Foreclosure Cases – gdatablog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -115,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Improving Foreclosure Timeline Predictions(Simple Explanation)</h1>
+      <h1 class="title">Evaluating Predictive Model Accuracy in Foreclosure Cases</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">news</div>
                 <div class="quarto-category">code</div>
@@ -153,21 +153,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary"><span class="header-section-number">1</span> Summary</a></li>
-  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link" data-scroll-target="#why-this-matters"><span class="header-section-number">2</span> Why This Matters</a></li>
-  <li><a href="#how-we-made-predictions-before" id="toc-how-we-made-predictions-before" class="nav-link" data-scroll-target="#how-we-made-predictions-before"><span class="header-section-number">3</span> How We Made Predictions Before</a>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#dataset-description" id="toc-dataset-description" class="nav-link" data-scroll-target="#dataset-description"><span class="header-section-number">2</span> Dataset Description</a></li>
+  <li><a href="#methodology-for-evaluating-regression-models" id="toc-methodology-for-evaluating-regression-models" class="nav-link" data-scroll-target="#methodology-for-evaluating-regression-models"><span class="header-section-number">3</span> Methodology for Evaluating Regression Models</a></li>
+  <li><a href="#approach-for-current-model" id="toc-approach-for-current-model" class="nav-link" data-scroll-target="#approach-for-current-model"><span class="header-section-number">4</span> Approach for Current Model</a>
   <ul class="collapse">
-  <li><a href="#problems-with-the-old-method" id="toc-problems-with-the-old-method" class="nav-link" data-scroll-target="#problems-with-the-old-method"><span class="header-section-number">3.1</span> Problems with the Old Method</a></li>
+  <li><a href="#evaluation-of-the-current-models-performance" id="toc-evaluation-of-the-current-models-performance" class="nav-link" data-scroll-target="#evaluation-of-the-current-models-performance"><span class="header-section-number">4.1</span> Evaluation of the Current Model’s Performance</a></li>
+  <li><a href="#analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" id="toc-analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" class="nav-link" data-scroll-target="#analysis-of-the-actual-vs.-predicted-graph-for-the-current-model"><span class="header-section-number">4.2</span> Analysis of the Actual vs.&nbsp;Predicted Graph for the Current Model</a></li>
+  <li><a href="#limitations-of-using-averages-for-predicting-time-to-solve" id="toc-limitations-of-using-averages-for-predicting-time-to-solve" class="nav-link" data-scroll-target="#limitations-of-using-averages-for-predicting-time-to-solve"><span class="header-section-number">4.3</span> Limitations of Using Averages for Predicting Time to Solve</a></li>
   </ul></li>
-  <li><a href="#our-new-approach" id="toc-our-new-approach" class="nav-link" data-scroll-target="#our-new-approach"><span class="header-section-number">4</span> Our New Approach</a>
+  <li><a href="#random-forest-predictive-model" id="toc-random-forest-predictive-model" class="nav-link" data-scroll-target="#random-forest-predictive-model"><span class="header-section-number">5</span> Random Forest Predictive Model</a>
   <ul class="collapse">
-  <li><a href="#what-we-considered-in-the-new-model" id="toc-what-we-considered-in-the-new-model" class="nav-link" data-scroll-target="#what-we-considered-in-the-new-model"><span class="header-section-number">4.1</span> What We Considered in the New Model</a></li>
+  <li><a href="#model-development" id="toc-model-development" class="nav-link" data-scroll-target="#model-development"><span class="header-section-number">5.1</span> Model Development</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5.2</span> Results</a></li>
+  <li><a href="#feature-importance" id="toc-feature-importance" class="nav-link" data-scroll-target="#feature-importance"><span class="header-section-number">5.3</span> Feature Importance</a></li>
   </ul></li>
-  <li><a href="#results-how-much-better-is-the-new-model" id="toc-results-how-much-better-is-the-new-model" class="nav-link" data-scroll-target="#results-how-much-better-is-the-new-model"><span class="header-section-number">5</span> Results: How Much Better Is the New Model?</a></li>
-  <li><a href="#what-influences-foreclosure-times-the-most" id="toc-what-influences-foreclosure-times-the-most" class="nav-link" data-scroll-target="#what-influences-foreclosure-times-the-most"><span class="header-section-number">6</span> What Influences Foreclosure Times the Most?</a></li>
-  <li><a href="#what-this-means-for-the-business" id="toc-what-this-means-for-the-business" class="nav-link" data-scroll-target="#what-this-means-for-the-business"><span class="header-section-number">7</span> What This Means for the Business</a></li>
-  <li><a href="#recomendations" id="toc-recomendations" class="nav-link" data-scroll-target="#recomendations"><span class="header-section-number">8</span> Recomendations</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">9</span> Conclusion</a></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">6</span> Recommendations</a></li>
   </ul>
 </nav>
     </div>
@@ -178,123 +179,139 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="summary" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="summary"><span class="header-section-number">1</span> Summary</h2>
-<p>We developed a new method to predict how long foreclosure cases will take to resolve. This approach is more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.</p>
-<p>Key Points:</p>
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>Accurate prediction of foreclosure timelines is critical for optimizing the valuation of distressed mortgage assets. Foreclosure dates significantly impact the estimation of asset recovery values within a mortgage portfolio, which in turn serves as a baseline for portfolio valuation and the structuring of settlements or other termination strategies. The ability to forecast these timelines with precision allows to better manage risk, enhance asset recovery, and make informed decisions regarding portfolio performance. This report examines the current predictive model for foreclosure times and introduces an enhanced approach aimed at improving the accuracy and reliability of these predictions to better support strategic financial decisions.</p>
+</section>
+<section id="dataset-description" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="dataset-description"><span class="header-section-number">2</span> Dataset Description</h2>
+<p>The dataset used in this project contains detailed information on mortgage foreclosure cases in Peru, including various legal proceedings associated with each case. This data is crucial for understanding the factors that influence the time it takes to resolve these cases. Key columns in the dataset include:</p>
 <ul>
-<li><p>New prediction model is about 3 times more accurate than the old one</p></li>
-<li><p>It can explain 94% of the differences in case resolution times, up from 39%</p></li>
-<li><p>This improvement will help us value assets more accurately and make better-informed decisions</p></li>
+<li><p><strong>Portfolio Name</strong>: Identifies the portfolio to which the legal case belongs.</p></li>
+<li><p><strong>Legal File Name</strong>: A unique identifier for each legal case.</p></li>
+<li><p><strong>Date</strong>: The date of each legal proceeding.</p></li>
+<li><p><strong>Legal Stage</strong>: The stage of the legal process</p></li>
+<li><p><strong>Legal Proceeding</strong>: The specific type of legal action taken within the case.</p></li>
+<li><p><strong>Foreclosure Initial Date</strong>: The date when the foreclosure process began.</p></li>
+<li><p><strong>Resolution Date</strong>: The date when the case was resolved.</p></li>
+<li><p><strong>Time to Solve</strong>: The duration between the start and resolution of the case.</p></li>
+<li><p><strong>Geographical Information</strong>: Including <strong>Zone</strong>, <strong>Region</strong>, and <strong>Zone Group</strong>, which provide context on where the case is being handled.</p></li>
+<li><p><strong>Case Characteristics</strong>: Such as whether an appeal (cassation) was involved (<strong>Tiene Casacion</strong>) and the central stage of the legal process (<strong>Etapa Central</strong>).</p></li>
 </ul>
 </section>
-<section id="why-this-matters" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="why-this-matters"><span class="header-section-number">2</span> Why This Matters</h2>
-<p>Knowing how long a foreclosure case will take is crucial for our business. It helps us:</p>
-<p>1. Value our mortgage assets more accurately</p>
-<p>2. Make better decisions about managing our portfolio</p>
-<p>3. Plan our financial strategies more effectively</p>
+<section id="methodology-for-evaluating-regression-models" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="methodology-for-evaluating-regression-models"><span class="header-section-number">3</span> Methodology for Evaluating Regression Models</h2>
+<p>To ensure our predictive model is accurate and reliable, we use several key metrics to evaluate its performance:</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Mean Absolute Error (MAE):</strong> This metric shows the average difference between the predicted and actual resolution times. In simpler terms, it tells us, on average, how many months the model’s predictions are off. The lower the MAE, the more accurate the model.</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Root Mean Squared Error (RMSE):</strong> RMSE is similar to MAE but gives more weight to larger errors. It provides a clearer picture of how often the model makes bigger mistakes in predicting resolution times. Again, lower values indicate a better-performing model.</p>
+<p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>R-squared (R²):</strong> R² explains how well the model’s predictions match the actual outcomes. It’s expressed as a percentage, where a higher value means the model does a good job of capturing the key factors that determine resolution times. For example, an R² of 0.94 means that the model explains 94% of the variations in resolution times, leaving only 6% unexplained.</p>
 </section>
-<section id="how-we-made-predictions-before" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="how-we-made-predictions-before"><span class="header-section-number">3</span> How We Made Predictions Before</h2>
-<p>Our old method was simple but not the most accurate:</p>
-<p>1. We looked at past foreclosure cases</p>
-<p>2. We calculated the average time cases took based on the type of legal proceeding</p>
-<p>3. For new cases, we predicted the resolution time by matching it to similar past cases</p>
-<section id="problems-with-the-old-method" class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="problems-with-the-old-method"><span class="header-section-number">3.1</span> Problems with the Old Method</h3>
-<ul>
-<li><p>It was often wrong by about 17 months on average</p></li>
-<li><p>It couldn’t account for the many factors that make each case unique</p></li>
-<li><p>It often underestimated or overestimated resolution times significantly</p>
-<p><img src="images/distributions.png" class="img-fluid"></p></li>
-</ul>
-</section>
-</section>
-<section id="our-new-approach" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="our-new-approach"><span class="header-section-number">4</span> Our New Approach</h2>
-<p>We’ve adopted a more sophisticated method called a “Random Forest” model. Here’s how it works:</p>
+<section id="approach-for-current-model" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="approach-for-current-model"><span class="header-section-number">4</span> Approach for Current Model</h2>
+<p>The current model predicts the resolution time for foreclosure cases by using historical averages. Specifically, it looks at past cases and calculates the average time it took to resolve cases based on the type of legal proceeding involved. For each new case, the model predicts the resolution time by matching it to similar cases from the past and applying the average time for those cases. The process involves:</p>
 <ol type="1">
-<li>It considers many factors about each case, not just the type of legal proceeding</li>
-<li>It learns patterns from thousands of past cases</li>
-<li>It makes predictions based on these learned patterns, considering multiple aspects of each new case</li>
+<li><p><strong>Data Collection &amp; Cleaning:</strong> We gathered and cleaned past foreclosure data to ensure reliability.</p></li>
+<li><p><strong>Grouping by Legal Proceeding:</strong> Cases were categorized by legal proceeding type, and average resolution times were calculated for each group.</p></li>
+<li><p><strong>Prediction:</strong> The model predicts resolution time based on the type of proceeding, using historical averages. If no match is found, an overall average is used. This straightforward approach assumes that past performance predicts future outcomes.</p></li>
 </ol>
-<section id="what-we-considered-in-the-new-model" class="level3" data-number="4.1">
-<h3 data-number="4.1" class="anchored" data-anchor-id="what-we-considered-in-the-new-model"><span class="header-section-number">4.1</span> What We Considered in the New Model</h3>
+<section id="evaluation-of-the-current-models-performance" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="evaluation-of-the-current-models-performance"><span class="header-section-number">4.1</span> Evaluation of the Current Model’s Performance</h3>
+<p>To evaluate the effectiveness of our current model, we tested it against foreclosure cases that have already been resolved. This allows us to compare the model’s predictions with the actual resolution times and measure its accuracy. The key metrics we used are:</p>
 <ul>
-<li>How long the case has been ongoing</li>
-<li>How many legal proceedings have happened</li>
-<li>How much time passes between proceedings</li>
-<li>The specific sequence of legal actions</li>
-<li>Details about the courts handling the cases</li>
+<li><p><strong>Mean Absolute Error (MAE):</strong> The model’s average prediction was off by 16.68 months. This means that, on average, the model’s predictions are almost 17 months away from the actual resolution time.</p></li>
+<li><p><strong>Root Mean Squared Error (RMSE):</strong> This metric, which emphasizes larger errors, shows a typical prediction error of 22.06 months. The higher error indicates that the model struggles with cases that deviate significantly from the average.</p></li>
+<li><p><strong>R-squared (R²):</strong> The model explains only 39% of the variance in resolution times. This low percentage suggests that the model does not capture many of the factors influencing how long a case will take.</p></li>
 </ul>
+<p>While the model provides some predictive capability, its accuracy and reliability are inadequate. The significant errors and low variance explanation suggest the need for a more sophisticated approach.</p>
 </section>
-</section>
-<section id="results-how-much-better-is-the-new-model" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="results-how-much-better-is-the-new-model"><span class="header-section-number">5</span> Results: How Much Better Is the New Model?</h2>
-<p>Our new model is significantly more accurate:</p>
-<ol type="1">
-<li><p><strong>Accuracy</strong>: On average, predictions are off by only about 5 months, compared to 17 months with the old method</p></li>
-<li><p><strong>Reliability</strong>: The new model can explain 94% of the differences in case resolution times, up from 39%</p></li>
-<li><p><strong>Consistency</strong>: It handles unusual cases much better, with fewer large errors</p></li>
-</ol>
-<div>
-
-</div>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<section id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model"><span class="header-section-number">4.2</span> Analysis of the Actual vs.&nbsp;Predicted Graph for the Current Model</h3>
+<p>The Actual vs.&nbsp;Predicted graph compares the model’s predictions with the actual resolution times for foreclosure cases. In an ideal scenario, all data points would lie along the diagonal line (red dashed line), indicating that the predicted values perfectly match the actual values.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/rf pred.png" class="img-fluid figure-img" width="400"></p>
-<figcaption>Random Forest Predictions</figcaption>
+<p><img src="actual vs.png" class="img-fluid figure-img"></p>
+<figcaption>Actual vs.&nbsp;Predicted Resolution Times for Current Model</figcaption>
 </figure>
 </div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>However, in the graph for the current model:</p>
+<ul>
+<li><p><strong>Wide Dispersion:</strong> Many points are scattered far from the diagonal line, indicating large prediction errors. This spread reflects the model’s inaccuracies, particularly in cases where the actual resolution time deviates from the average.</p></li>
+<li><p><strong>Horizontal and Vertical Lines:</strong> These occur because the model uses average times for specific legal proceedings, leading to identical predictions for different cases. This approach doesn’t account for the variability within those cases, resulting in clusters of predictions that don’t match the actual outcomes.</p></li>
+</ul>
+<p>For example, in a specific case where the actual resolution time was 30 months, the model might have predicted only 15 months based on the average for that type of proceeding. This discrepancy highlights the model’s tendency to underestimate or overestimate the resolution time, depending on how closely a case aligns with the historical average.</p>
+</section>
+<section id="limitations-of-using-averages-for-predicting-time-to-solve" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="limitations-of-using-averages-for-predicting-time-to-solve"><span class="header-section-number">4.3</span> Limitations of Using Averages for Predicting Time to Solve</h3>
+<p>The graphs in this section displays the distribution of resolution times for the 20 most common legal proceedings. Each bar or line in the graph represents how resolution times are spread out for these specific types of proceedings.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/actual vs.png" class="img-fluid figure-img" width="441"></p>
-<figcaption>Actual vs Predicted</figcaption>
+<p><img src="distribuciones.png" class="img-fluid figure-img"></p>
+<figcaption>Distribution of Resolution Times for Top 20 Legal Proceedings</figcaption>
 </figure>
 </div>
-</div>
-</div>
-</div>
-</section>
-<section id="what-influences-foreclosure-times-the-most" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="what-influences-foreclosure-times-the-most"><span class="header-section-number">6</span> What Influences Foreclosure Times the Most?</h2>
-<p>Our model found these factors to be most important in predicting resolution times:</p>
-<ol type="1">
-<li>How long the case has been ongoing</li>
-<li>The number of legal proceedings that have occurred</li>
-<li>The specific type of legal proceedings involved</li>
-<li>The region where the case is being handled</li>
-</ol>
-</section>
-<section id="what-this-means-for-the-business" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="what-this-means-for-the-business"><span class="header-section-number">7</span> What This Means for the Business</h2>
-<ol type="1">
-<li><strong>Better Asset Valuation</strong>: We can more accurately estimate the value of our mortgage assets</li>
-<li><strong>Improved Risk Management</strong>: We can better anticipate and plan for lengthy foreclosure processes</li>
-<li><strong>Smarter Decision Making</strong>: We can make more informed choices about how to handle different cases</li>
-<li><strong>Efficient Resource Allocation</strong>: We can better prioritize our efforts and resources across our portfolio</li>
-</ol>
-</section>
-<section id="recomendations" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="recomendations"><span class="header-section-number">8</span> Recomendations</h2>
 <ul>
-<li><strong>Expand Features:</strong> Improve model accuracy by adding features like Loan-to-Value (LTV) ratios, to help predict whether a foreclosure will be resolved by a third party or creditor, along with economic indicators or more detailed geographic data..</li>
+<li><p><strong>Wide Variance:</strong> For many legal proceedings, there is a broad range of resolution times. When the distribution of these times is far from the mean (average), using that average as a prediction leads to significant errors. This is because the average fails to capture the true spread of the data, especially in cases with outliers or skewed distributions.</p></li>
+<li><p><strong>Skewed Distributions:</strong> In some cases, the distribution is heavily skewed, meaning that a few cases take much longer or shorter than most others. The average gets pulled in one direction, making it a poor predictor for the majority of cases.</p></li>
 </ul>
-<!-- -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="output.png" class="img-fluid figure-img"></p>
+<figcaption>Feature Importance for Random Forest Model</figcaption>
+</figure>
+</div>
 <ul>
-<li><p><strong>Explore Advanced Techniques:</strong> Test advanced machine learning techniques for further improvement.</p></li>
-<li><p><strong>Integrate with Financial Tools:</strong> Incorporate the model’s predictions into financial systems to enhance decision-making and structure DPO agreements.</p></li>
+<li><strong>Non-Normal Distributions:</strong> Many proceedings have skewed or uneven distributions, meaning that most cases are not near the average time. Using a simple average as a predictor fails to account for these nuances, leading to significant errors.</li>
 </ul>
+<p>In essence, relying on averages oversimplifies the prediction process and fails to account for the variability in actual case outcomes. This can lead to substantial inaccuracies, especially when the distribution is not centered around the mean</p>
 </section>
-<section id="conclusion" class="level2" data-number="9">
-<h2 data-number="9" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">9</span> Conclusion</h2>
-<p>Our new foreclosure prediction model represents a significant improvement in our ability to manage mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance.</p>
+</section>
+<section id="random-forest-predictive-model" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="random-forest-predictive-model"><span class="header-section-number">5</span> Random Forest Predictive Model</h2>
+<p>To enhance the accuracy of our foreclosure time predictions, we developed a Random Forest model. This advanced machine learning technique constructs multiple decision trees, each one analyzing different aspects of the data. By averaging the predictions from these trees, the model effectively manages the complexities of the dataset and minimizes the risk of overfitting.</p>
+<p>Our model leverages a wide range of features, such as the sequence of legal proceedings, time intervals between actions, and specific attributes related to the courts handling the cases. By considering these diverse factors, the Random Forest model delivers predictions that are significantly more accurate and reliable</p>
+<section id="model-development" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="model-development"><span class="header-section-number">5.1</span> Model Development</h3>
+<p>1.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Data Preprocessing:</strong> Cleaned dataset, removed irrelevant columns, handled missing values, and filtered for foreclosure cases. This ensures we’re working with accurate, relevant data.</p>
+<p>2.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Feature Engineering:</strong> We created features such as Months_Since_Start, Proceeding_Count, Months_Since_Last_Proceeding, Average_Months_Between_Proceedings, Distinct_Proceeding_Types, and Repeated_Proceeding_Count. These features capture key temporal, procedural, and case-specific aspects, improving prediction accuracy.</p>
+<p>3.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Encoding and Scaling</strong>: Applied Target Encoding for high-cardinality variables, Label Encoding for other categorical features, and StandardScaler for numerical features. This prepares the data for optimal model performance.</p>
+<p>4.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Model Training:</strong> Split the dataset, then trained a Random Forest with 300 trees. This approach leverages multiple decision trees to make robust predictions about foreclosure resolution times.</p>
+</section>
+<section id="results" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="results"><span class="header-section-number">5.2</span> Results</h3>
+<p>The Random Forest model’s performance in predicting foreclosure resolution times is summarized by the following key metrics:</p>
+<ul>
+<li><p><strong>Mean Absolute Error (MAE):</strong> 4.89 months</p></li>
+<li><p><strong>Root Mean Squared Error (RMSE):</strong> 6.99 months</p></li>
+<li><p><strong>R-squared (R²):</strong> 0.94</p></li>
+</ul>
+<p>These metrics indicate a high level of accuracy, with the model explaining 94% of the variance in the resolution times, and relatively low prediction errors.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rf pred.png" class="img-fluid figure-img"></p>
+<figcaption>Random Forest Model Predictions vs Actual Resolution Times</figcaption>
+</figure>
+</div>
+</section>
+<section id="feature-importance" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="feature-importance"><span class="header-section-number">5.3</span> Feature Importance</h3>
+<p>The bar chart ranks the importance of various features used by the model to make predictions. Added Features like Months_Since_Start, and Proceeding_Count emerge as the most significant factors influencing the resolution time.</p>
+<p>Understanding which features most strongly affect the model’s predictions can provide valuable insights. For instance, the high importance of Months_Since_Start and Proceeding_Count highlights the relevance of the duration and frequency of legal actions in determining how long a foreclosure case will take to resolve.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rf importance.png" class="img-fluid figure-img"></p>
+<figcaption>Feature Importance for Random Forest Model</figcaption>
+</figure>
+</div>
+<p>This visualization provides a clear ranking of the features that have the most significant impact on the model’s predictions. It offers valuable insights into which factors are most influential in determining foreclosure resolution times.</p>
+</section>
+</section>
+<section id="recommendations" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="recommendations"><span class="header-section-number">6</span> Recommendations</h2>
+<ol type="1">
+<li><p><strong>Expand Features:</strong> <strong>Expand Features:</strong> Enhance the model’s accuracy by incorporating additional features, such as Loan-to-Value (LTV) ratios to help predict whether a foreclosure will be resolved by a third party or the creditor, along with economic indicators or more detailed geographic data.</p></li>
+<li><p><strong>Explore Advanced Techniques:</strong> Consider testing more advanced machine learning techniques in the future for further improvements</p></li>
+<li><p><strong>Integrate with Financial Tools:</strong> Integrate the model’s predictions into existing financial systems to support seamless decision-making and help structure DPO (Discounted Payoff) agreements more effectively.</p></li>
+</ol>
 
 
 </section>

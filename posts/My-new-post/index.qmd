@@ -4,21 +4,25 @@ author: "Piru Puiggari"
 date: "2024-08-23"
 categories: [news, code, analysis]
 image: "casa.jpg"
+format:
+  html:
+    toc: true
+    toc-location: right
+    toc-depth: 3
+    number-sections: true
 ---
 
-# 
+## Summary
 
-##  Summary
-
-We developed a new method to predict how long foreclosure cases will take to resolve. This new approach is significantly more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.
+We developed a new method to predict how long foreclosure cases will take to resolve. This approach is more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.
 
 Key Points:
 
- - Our new prediction model is about 3 times more accurate than the old one
+-   New prediction model is about 3 times more accurate than the old one
 
- - It can explain 94% of the differences in case resolution times, up from 39%
+-   It can explain 94% of the differences in case resolution times, up from 39%
 
- - This improvement will help us value assets more accurately and make better-informed decisions
+-   This improvement will help us value assets more accurately and make better-informed decisions
 
 ## Why This Matters
 
@@ -76,9 +80,11 @@ Our new model is significantly more accurate:
 
 3.  **Consistency**: It handles unusual cases much better, with fewer large errors
 
-![](images/rf pred.png){width="321"}
+::: {layout-ncol="2"}
+![Random Forest Predictions](images/rf%20pred.png){width="400px"}
 
-![](images/actual vs.png){width="211"}
+![Actual vs Predicted](images/actual%20vs.png){width="441"}
+:::
 
 ## What Influences Foreclosure Times the Most?
 
@@ -89,19 +95,23 @@ Our model found these factors to be most important in predicting resolution time
 3.  The specific type of legal proceedings involved
 4.  The region where the case is being handled
 
-## What This Means for Our Business
+## What This Means for the Business
 
 1.  **Better Asset Valuation**: We can more accurately estimate the value of our mortgage assets
 2.  **Improved Risk Management**: We can better anticipate and plan for lengthy foreclosure processes
 3.  **Smarter Decision Making**: We can make more informed choices about how to handle different cases
 4.  **Efficient Resource Allocation**: We can better prioritize our efforts and resources across our portfolio
 
-## Next Steps
+## Recomendations
 
-1.  **Integration**: Incorporate this new model into our existing financial systems
-2.  **Monitoring**: We'll continuously track the model's performance to ensure it remains accurate
-3.  **Refinement**: We'll look for ways to further improve the model, possibly by including additional relevant data
+-   **Expand Features:** Improve model accuracy by adding features like Loan-to-Value (LTV) ratios, to help predict whether a foreclosure will be resolved by a third party or creditor, along with economic indicators or more detailed geographic data..
+
+<!-- -->
+
+-   **Explore Advanced Techniques:** Test advanced machine learning techniques for further improvement.
+
+-   **Integrate with Financial Tools:** Incorporate the model's predictions into financial systems to enhance decision-making and structure DPO agreements.
 
 ## Conclusion
 
-Our new foreclosure prediction model represents a significant improvement in our ability to manage our mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance.
+Our new foreclosure prediction model represents a significant improvement in our ability to manage mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance.
