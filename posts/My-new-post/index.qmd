@@ -1,0 +1,107 @@
+---
+title: "Improving Foreclosure Timeline Predictions(Simple Explanation)"
+author: "Piru Puiggari"
+date: "2024-08-23"
+categories: [news, code, analysis]
+image: "casa.jpg"
+---
+
+# 
+
+##  Summary
+
+We developed a new method to predict how long foreclosure cases will take to resolve. This new approach is significantly more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.
+
+Key Points:
+
+ - Our new prediction model is about 3 times more accurate than the old one
+
+ - It can explain 94% of the differences in case resolution times, up from 39%
+
+ - This improvement will help us value assets more accurately and make better-informed decisions
+
+## Why This Matters
+
+Knowing how long a foreclosure case will take is crucial for our business. It helps us:
+
+1\. Value our mortgage assets more accurately
+
+2\. Make better decisions about managing our portfolio
+
+3\. Plan our financial strategies more effectively
+
+## How We Made Predictions Before
+
+Our old method was simple but not the most accurate:
+
+1\. We looked at past foreclosure cases
+
+2\. We calculated the average time cases took based on the type of legal proceeding
+
+3\. For new cases, we predicted the resolution time by matching it to similar past cases
+
+### Problems with the Old Method
+
+-   It was often wrong by about 17 months on average
+
+-   It couldn't account for the many factors that make each case unique
+
+-   It often underestimated or overestimated resolution times significantly
+
+    ![](images/distributions.png)
+
+## Our New Approach
+
+We've adopted a more sophisticated method called a "Random Forest" model. Here's how it works:
+
+1.  It considers many factors about each case, not just the type of legal proceeding
+2.  It learns patterns from thousands of past cases
+3.  It makes predictions based on these learned patterns, considering multiple aspects of each new case
+
+### What We Considered in the New Model
+
+-   How long the case has been ongoing
+-   How many legal proceedings have happened
+-   How much time passes between proceedings
+-   The specific sequence of legal actions
+-   Details about the courts handling the cases
+
+## Results: How Much Better Is the New Model?
+
+Our new model is significantly more accurate:
+
+1.  **Accuracy**: On average, predictions are off by only about 5 months, compared to 17 months with the old method
+
+2.  **Reliability**: The new model can explain 94% of the differences in case resolution times, up from 39%
+
+3.  **Consistency**: It handles unusual cases much better, with fewer large errors
+
+![](images/rf pred.png){width="321"}
+
+![](images/actual vs.png){width="211"}
+
+## What Influences Foreclosure Times the Most?
+
+Our model found these factors to be most important in predicting resolution times:
+
+1.  How long the case has been ongoing
+2.  The number of legal proceedings that have occurred
+3.  The specific type of legal proceedings involved
+4.  The region where the case is being handled
+
+## What This Means for Our Business
+
+1.  **Better Asset Valuation**: We can more accurately estimate the value of our mortgage assets
+2.  **Improved Risk Management**: We can better anticipate and plan for lengthy foreclosure processes
+3.  **Smarter Decision Making**: We can make more informed choices about how to handle different cases
+4.  **Efficient Resource Allocation**: We can better prioritize our efforts and resources across our portfolio
+
+## Next Steps
+
+1.  **Integration**: Incorporate this new model into our existing financial systems
+2.  **Monitoring**: We'll continuously track the model's performance to ensure it remains accurate
+3.  **Refinement**: We'll look for ways to further improve the model, possibly by including additional relevant data
+
+## Conclusion
+
+Our new foreclosure prediction model represents a significant improvement in our ability to manage our mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance.

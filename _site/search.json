@@ -1,0 +1,100 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html",
+    "href": "posts/My-new-post/index.html",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "We developed a new method to predict how long foreclosure cases will take to resolve. This new approach is significantly more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.\nKey Points:\n\nOur new prediction model is about 3 times more accurate than the old one\nIt can explain 94% of the differences in case resolution times, up from 39%\nThis improvement will help us value assets more accurately and make better-informed decisions\n\n\n\n\nKnowing how long a foreclosure case will take is crucial for our business. It helps us:\n1. Value our mortgage assets more accurately\n2. Make better decisions about managing our portfolio\n3. Plan our financial strategies more effectively\n\n\n\nOur old method was simple but not the most accurate:\n1. We looked at past foreclosure cases\n2. We calculated the average time cases took based on the type of legal proceeding\n3. For new cases, we predicted the resolution time by matching it to similar past cases\n\n\n\nIt was often wrong by about 17 months on average\nIt couldn’t account for the many factors that make each case unique\nIt often underestimated or overestimated resolution times significantly\n\n\n\n\n\n\nWe’ve adopted a more sophisticated method called a “Random Forest” model. Here’s how it works:\n\nIt considers many factors about each case, not just the type of legal proceeding\nIt learns patterns from thousands of past cases\nIt makes predictions based on these learned patterns, considering multiple aspects of each new case\n\n\n\n\nHow long the case has been ongoing\nHow many legal proceedings have happened\nHow much time passes between proceedings\nThe specific sequence of legal actions\nDetails about the courts handling the cases\n\n\n\n\n\nOur new model is significantly more accurate:\n\nAccuracy: On average, predictions are off by only about 5 months, compared to 17 months with the old method\nReliability: The new model can explain 94% of the differences in case resolution times, up from 39%\nConsistency: It handles unusual cases much better, with fewer large errors\n\n\n\n\n\n\nOur model found these factors to be most important in predicting resolution times:\n\nHow long the case has been ongoing\nThe number of legal proceedings that have occurred\nThe specific type of legal proceedings involved\nThe region where the case is being handled\n\n\n\n\n\nBetter Asset Valuation: We can more accurately estimate the value of our mortgage assets\nImproved Risk Management: We can better anticipate and plan for lengthy foreclosure processes\nSmarter Decision Making: We can make more informed choices about how to handle different cases\nEfficient Resource Allocation: We can better prioritize our efforts and resources across our portfolio\n\n\n\n\n\nIntegration: Incorporate this new model into our existing financial systems\nMonitoring: We’ll continuously track the model’s performance to ensure it remains accurate\nRefinement: We’ll look for ways to further improve the model, possibly by including additional relevant data\n\n\n\n\nOur new foreclosure prediction model represents a significant improvement in our ability to manage our mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance."
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#summary",
+    "href": "posts/My-new-post/index.html#summary",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "We developed a new method to predict how long foreclosure cases will take to resolve. This new approach is significantly more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.\nKey Points:\n\nOur new prediction model is about 3 times more accurate than the old one\nIt can explain 94% of the differences in case resolution times, up from 39%\nThis improvement will help us value assets more accurately and make better-informed decisions"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#why-this-matters",
+    "href": "posts/My-new-post/index.html#why-this-matters",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Knowing how long a foreclosure case will take is crucial for our business. It helps us:\n1. Value our mortgage assets more accurately\n2. Make better decisions about managing our portfolio\n3. Plan our financial strategies more effectively"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#how-we-made-predictions-before",
+    "href": "posts/My-new-post/index.html#how-we-made-predictions-before",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Our old method was simple but not the most accurate:\n1. We looked at past foreclosure cases\n2. We calculated the average time cases took based on the type of legal proceeding\n3. For new cases, we predicted the resolution time by matching it to similar past cases\n\n\n\nIt was often wrong by about 17 months on average\nIt couldn’t account for the many factors that make each case unique\nIt often underestimated or overestimated resolution times significantly"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#our-new-approach",
+    "href": "posts/My-new-post/index.html#our-new-approach",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "We’ve adopted a more sophisticated method called a “Random Forest” model. Here’s how it works:\n\nIt considers many factors about each case, not just the type of legal proceeding\nIt learns patterns from thousands of past cases\nIt makes predictions based on these learned patterns, considering multiple aspects of each new case\n\n\n\n\nHow long the case has been ongoing\nHow many legal proceedings have happened\nHow much time passes between proceedings\nThe specific sequence of legal actions\nDetails about the courts handling the cases"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#results-how-much-better-is-the-new-model",
+    "href": "posts/My-new-post/index.html#results-how-much-better-is-the-new-model",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Our new model is significantly more accurate:\n\nAccuracy: On average, predictions are off by only about 5 months, compared to 17 months with the old method\nReliability: The new model can explain 94% of the differences in case resolution times, up from 39%\nConsistency: It handles unusual cases much better, with fewer large errors"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#what-influences-foreclosure-times-the-most",
+    "href": "posts/My-new-post/index.html#what-influences-foreclosure-times-the-most",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Our model found these factors to be most important in predicting resolution times:\n\nHow long the case has been ongoing\nThe number of legal proceedings that have occurred\nThe specific type of legal proceedings involved\nThe region where the case is being handled"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#what-this-means-for-our-business",
+    "href": "posts/My-new-post/index.html#what-this-means-for-our-business",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Better Asset Valuation: We can more accurately estimate the value of our mortgage assets\nImproved Risk Management: We can better anticipate and plan for lengthy foreclosure processes\nSmarter Decision Making: We can make more informed choices about how to handle different cases\nEfficient Resource Allocation: We can better prioritize our efforts and resources across our portfolio"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#next-steps",
+    "href": "posts/My-new-post/index.html#next-steps",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Integration: Incorporate this new model into our existing financial systems\nMonitoring: We’ll continuously track the model’s performance to ensure it remains accurate\nRefinement: We’ll look for ways to further improve the model, possibly by including additional relevant data"
+  },
+  {
+    "objectID": "posts/My-new-post/index.html#conclusion",
+    "href": "posts/My-new-post/index.html#conclusion",
+    "title": "Improving Foreclosure Timeline Predictions(Simple Explanation)",
+    "section": "",
+    "text": "Our new foreclosure prediction model represents a significant improvement in our ability to manage our mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "gdatablog",
+    "section": "",
+    "text": "Post With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nImproving Foreclosure Timeline Predictions(Simple Explanation)\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nAug 20, 2024\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+  }
+]
