@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -73,7 +107,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -148,30 +182,7 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
-  <li><a href="#dataset-description" id="toc-dataset-description" class="nav-link" data-scroll-target="#dataset-description"><span class="header-section-number">2</span> Dataset Description</a></li>
-  <li><a href="#methodology-for-evaluating-regression-models" id="toc-methodology-for-evaluating-regression-models" class="nav-link" data-scroll-target="#methodology-for-evaluating-regression-models"><span class="header-section-number">3</span> Methodology for Evaluating Regression Models</a></li>
-  <li><a href="#approach-for-current-model" id="toc-approach-for-current-model" class="nav-link" data-scroll-target="#approach-for-current-model"><span class="header-section-number">4</span> Approach for Current Model</a>
-  <ul class="collapse">
-  <li><a href="#evaluation-of-the-current-models-performance" id="toc-evaluation-of-the-current-models-performance" class="nav-link" data-scroll-target="#evaluation-of-the-current-models-performance"><span class="header-section-number">4.1</span> Evaluation of the Current Model’s Performance</a></li>
-  <li><a href="#analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" id="toc-analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" class="nav-link" data-scroll-target="#analysis-of-the-actual-vs.-predicted-graph-for-the-current-model"><span class="header-section-number">4.2</span> Analysis of the Actual vs.&nbsp;Predicted Graph for the Current Model</a></li>
-  <li><a href="#limitations-of-using-averages-for-predicting-time-to-solve" id="toc-limitations-of-using-averages-for-predicting-time-to-solve" class="nav-link" data-scroll-target="#limitations-of-using-averages-for-predicting-time-to-solve"><span class="header-section-number">4.3</span> Limitations of Using Averages for Predicting Time to Solve</a></li>
-  </ul></li>
-  <li><a href="#random-forest-predictive-model" id="toc-random-forest-predictive-model" class="nav-link" data-scroll-target="#random-forest-predictive-model"><span class="header-section-number">5</span> Random Forest Predictive Model</a>
-  <ul class="collapse">
-  <li><a href="#model-development" id="toc-model-development" class="nav-link" data-scroll-target="#model-development"><span class="header-section-number">5.1</span> Model Development</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5.2</span> Results</a></li>
-  <li><a href="#feature-importance" id="toc-feature-importance" class="nav-link" data-scroll-target="#feature-importance"><span class="header-section-number">5.3</span> Feature Importance</a></li>
-  </ul></li>
-  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">6</span> Recommendations</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -179,12 +190,27 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="introduction" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Explanation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Code &amp; Analysis</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="in-this-tab" class="level3">
+<h3 class="anchored" data-anchor-id="in-this-tab">In this tab:</h3>
+<ul>
+<li><a href="#sec-introduction">Introduction</a></li>
+<li><a href="#sec-dataset">Dataset Description</a></li>
+<li><a href="#sec-methodology">Methodology</a></li>
+<li><a href="#sec-current-model">Current Model Approach</a></li>
+<li><a href="#sec-random-forest">Random Forest Model</a></li>
+<li><a href="#sec-recommendations">Recommendations</a></li>
+</ul>
+</section>
+<section id="sec-introduction" class="level3">
+<h3 class="anchored" data-anchor-id="sec-introduction">Introduction</h3>
 <p>Accurate prediction of foreclosure timelines is critical for optimizing the valuation of distressed mortgage assets. Foreclosure dates significantly impact the estimation of asset recovery values within a mortgage portfolio, which in turn serves as a baseline for portfolio valuation and the structuring of settlements or other termination strategies. The ability to forecast these timelines with precision allows to better manage risk, enhance asset recovery, and make informed decisions regarding portfolio performance. This report examines the current predictive model for foreclosure times and introduces an enhanced approach aimed at improving the accuracy and reliability of these predictions to better support strategic financial decisions.</p>
 </section>
-<section id="dataset-description" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="dataset-description"><span class="header-section-number">2</span> Dataset Description</h2>
+<section id="sec-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="sec-dataset">Dataset Description</h3>
 <p>The dataset used in this project contains detailed information on mortgage foreclosure cases in Peru, including various legal proceedings associated with each case. This data is crucial for understanding the factors that influence the time it takes to resolve these cases. Key columns in the dataset include:</p>
 <ul>
 <li><p><strong>Portfolio Name</strong>: Identifies the portfolio to which the legal case belongs.</p></li>
@@ -199,23 +225,23 @@ ul.task-list li input[type="checkbox"] {
 <li><p><strong>Case Characteristics</strong>: Such as whether an appeal (cassation) was involved (<strong>Tiene Casacion</strong>) and the central stage of the legal process (<strong>Etapa Central</strong>).</p></li>
 </ul>
 </section>
-<section id="methodology-for-evaluating-regression-models" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="methodology-for-evaluating-regression-models"><span class="header-section-number">3</span> Methodology for Evaluating Regression Models</h2>
+<section id="sec-methodology" class="level3">
+<h3 class="anchored" data-anchor-id="sec-methodology">Methodology for Evaluating Regression Models</h3>
 <p>To ensure our predictive model is accurate and reliable, we use several key metrics to evaluate its performance:</p>
 <p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Mean Absolute Error (MAE):</strong> This metric shows the average difference between the predicted and actual resolution times. In simpler terms, it tells us, on average, how many months the model’s predictions are off. The lower the MAE, the more accurate the model.</p>
 <p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Root Mean Squared Error (RMSE):</strong> RMSE is similar to MAE but gives more weight to larger errors. It provides a clearer picture of how often the model makes bigger mistakes in predicting resolution times. Again, lower values indicate a better-performing model.</p>
 <p>·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>R-squared (R²):</strong> R² explains how well the model’s predictions match the actual outcomes. It’s expressed as a percentage, where a higher value means the model does a good job of capturing the key factors that determine resolution times. For example, an R² of 0.94 means that the model explains 94% of the variations in resolution times, leaving only 6% unexplained.</p>
 </section>
-<section id="approach-for-current-model" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="approach-for-current-model"><span class="header-section-number">4</span> Approach for Current Model</h2>
+<section id="sec-current-model" class="level3">
+<h3 class="anchored" data-anchor-id="sec-current-model">Approach for Current Model</h3>
 <p>The current model predicts the resolution time for foreclosure cases by using historical averages. Specifically, it looks at past cases and calculates the average time it took to resolve cases based on the type of legal proceeding involved. For each new case, the model predicts the resolution time by matching it to similar cases from the past and applying the average time for those cases. The process involves:</p>
 <ol type="1">
 <li><p><strong>Data Collection &amp; Cleaning:</strong> We gathered and cleaned past foreclosure data to ensure reliability.</p></li>
 <li><p><strong>Grouping by Legal Proceeding:</strong> Cases were categorized by legal proceeding type, and average resolution times were calculated for each group.</p></li>
 <li><p><strong>Prediction:</strong> The model predicts resolution time based on the type of proceeding, using historical averages. If no match is found, an overall average is used. This straightforward approach assumes that past performance predicts future outcomes.</p></li>
 </ol>
-<section id="evaluation-of-the-current-models-performance" class="level3" data-number="4.1">
-<h3 data-number="4.1" class="anchored" data-anchor-id="evaluation-of-the-current-models-performance"><span class="header-section-number">4.1</span> Evaluation of the Current Model’s Performance</h3>
+<section id="evaluation-of-the-current-models-performance" class="level4">
+<h4 class="anchored" data-anchor-id="evaluation-of-the-current-models-performance">Evaluation of the Current Model’s Performance</h4>
 <p>To evaluate the effectiveness of our current model, we tested it against foreclosure cases that have already been resolved. This allows us to compare the model’s predictions with the actual resolution times and measure its accuracy. The key metrics we used are:</p>
 <ul>
 <li><p><strong>Mean Absolute Error (MAE):</strong> The model’s average prediction was off by 16.68 months. This means that, on average, the model’s predictions are almost 17 months away from the actual resolution time.</p></li>
@@ -224,8 +250,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>While the model provides some predictive capability, its accuracy and reliability are inadequate. The significant errors and low variance explanation suggest the need for a more sophisticated approach.</p>
 </section>
-<section id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" class="level3" data-number="4.2">
-<h3 data-number="4.2" class="anchored" data-anchor-id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model"><span class="header-section-number">4.2</span> Analysis of the Actual vs.&nbsp;Predicted Graph for the Current Model</h3>
+<section id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model" class="level4">
+<h4 class="anchored" data-anchor-id="analysis-of-the-actual-vs.-predicted-graph-for-the-current-model">Analysis of the Actual vs.&nbsp;Predicted Graph for the Current Model</h4>
 <p>The Actual vs.&nbsp;Predicted graph compares the model’s predictions with the actual resolution times for foreclosure cases. In an ideal scenario, all data points would lie along the diagonal line (red dashed line), indicating that the predicted values perfectly match the actual values.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -240,8 +266,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>For example, in a specific case where the actual resolution time was 30 months, the model might have predicted only 15 months based on the average for that type of proceeding. This discrepancy highlights the model’s tendency to underestimate or overestimate the resolution time, depending on how closely a case aligns with the historical average.</p>
 </section>
-<section id="limitations-of-using-averages-for-predicting-time-to-solve" class="level3" data-number="4.3">
-<h3 data-number="4.3" class="anchored" data-anchor-id="limitations-of-using-averages-for-predicting-time-to-solve"><span class="header-section-number">4.3</span> Limitations of Using Averages for Predicting Time to Solve</h3>
+<section id="limitations-of-using-averages-for-predicting-time-to-solve" class="level4">
+<h4 class="anchored" data-anchor-id="limitations-of-using-averages-for-predicting-time-to-solve">Limitations of Using Averages for Predicting Time to Solve</h4>
 <p>The graphs in this section displays the distribution of resolution times for the 20 most common legal proceedings. Each bar or line in the graph represents how resolution times are spread out for these specific types of proceedings.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -265,19 +291,19 @@ ul.task-list li input[type="checkbox"] {
 <p>In essence, relying on averages oversimplifies the prediction process and fails to account for the variability in actual case outcomes. This can lead to substantial inaccuracies, especially when the distribution is not centered around the mean</p>
 </section>
 </section>
-<section id="random-forest-predictive-model" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="random-forest-predictive-model"><span class="header-section-number">5</span> Random Forest Predictive Model</h2>
+<section id="sec-random-forest" class="level3">
+<h3 class="anchored" data-anchor-id="sec-random-forest">Random Forest Predictive Model</h3>
 <p>To enhance the accuracy of our foreclosure time predictions, we developed a Random Forest model. This advanced machine learning technique constructs multiple decision trees, each one analyzing different aspects of the data. By averaging the predictions from these trees, the model effectively manages the complexities of the dataset and minimizes the risk of overfitting.</p>
 <p>Our model leverages a wide range of features, such as the sequence of legal proceedings, time intervals between actions, and specific attributes related to the courts handling the cases. By considering these diverse factors, the Random Forest model delivers predictions that are significantly more accurate and reliable</p>
-<section id="model-development" class="level3" data-number="5.1">
-<h3 data-number="5.1" class="anchored" data-anchor-id="model-development"><span class="header-section-number">5.1</span> Model Development</h3>
+<section id="model-development" class="level4">
+<h4 class="anchored" data-anchor-id="model-development">Model Development</h4>
 <p>1.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Data Preprocessing:</strong> Cleaned dataset, removed irrelevant columns, handled missing values, and filtered for foreclosure cases. This ensures we’re working with accurate, relevant data.</p>
 <p>2.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Feature Engineering:</strong> We created features such as Months_Since_Start, Proceeding_Count, Months_Since_Last_Proceeding, Average_Months_Between_Proceedings, Distinct_Proceeding_Types, and Repeated_Proceeding_Count. These features capture key temporal, procedural, and case-specific aspects, improving prediction accuracy.</p>
 <p>3.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Encoding and Scaling</strong>: Applied Target Encoding for high-cardinality variables, Label Encoding for other categorical features, and StandardScaler for numerical features. This prepares the data for optimal model performance.</p>
 <p>4.&nbsp;&nbsp;&nbsp;&nbsp; <strong>Model Training:</strong> Split the dataset, then trained a Random Forest with 300 trees. This approach leverages multiple decision trees to make robust predictions about foreclosure resolution times.</p>
 </section>
-<section id="results" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="results"><span class="header-section-number">5.2</span> Results</h3>
+<section id="results" class="level4">
+<h4 class="anchored" data-anchor-id="results">Results</h4>
 <p>The Random Forest model’s performance in predicting foreclosure resolution times is summarized by the following key metrics:</p>
 <ul>
 <li><p><strong>Mean Absolute Error (MAE):</strong> 4.89 months</p></li>
@@ -292,8 +318,8 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </section>
-<section id="feature-importance" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="feature-importance"><span class="header-section-number">5.3</span> Feature Importance</h3>
+<section id="feature-importance" class="level4">
+<h4 class="anchored" data-anchor-id="feature-importance">Feature Importance</h4>
 <p>The bar chart ranks the importance of various features used by the model to make predictions. Added Features like Months_Since_Start, and Proceeding_Count emerge as the most significant factors influencing the resolution time.</p>
 <p>Understanding which features most strongly affect the model’s predictions can provide valuable insights. For instance, the high importance of Months_Since_Start and Proceeding_Count highlights the relevance of the duration and frequency of legal actions in determining how long a foreclosure case will take to resolve.</p>
 <div class="quarto-figure quarto-figure-center">
@@ -305,16 +331,240 @@ ul.task-list li input[type="checkbox"] {
 <p>This visualization provides a clear ranking of the features that have the most significant impact on the model’s predictions. It offers valuable insights into which factors are most influential in determining foreclosure resolution times.</p>
 </section>
 </section>
-<section id="recommendations" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="recommendations"><span class="header-section-number">6</span> Recommendations</h2>
+<section id="sec-recommendations" class="level3">
+<h3 class="anchored" data-anchor-id="sec-recommendations">Recommendations</h3>
 <ol type="1">
 <li><p><strong>Expand Features:</strong> <strong>Expand Features:</strong> Enhance the model’s accuracy by incorporating additional features, such as Loan-to-Value (LTV) ratios to help predict whether a foreclosure will be resolved by a third party or the creditor, along with economic indicators or more detailed geographic data.</p></li>
 <li><p><strong>Explore Advanced Techniques:</strong> Consider testing more advanced machine learning techniques in the future for further improvements</p></li>
 <li><p><strong>Integrate with Financial Tools:</strong> Integrate the model’s predictions into existing financial systems to support seamless decision-making and help structure DPO (Discounted Payoff) agreements more effectively.</p></li>
 </ol>
-
-
 </section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="in-this-section" class="level3">
+<h3 class="anchored" data-anchor-id="in-this-section">In this section:</h3>
+<ul>
+<li><a href="#sec-data-loading">Data Loading</a></li>
+<li><a href="#sec-feature-engineering">Feature Engineering</a></li>
+<li><a href="#sec-encoding">Encoding and Preparation</a></li>
+<li><a href="#sec-model-training">Model Training</a></li>
+<li><a href="#sec-visualization">Visualization</a></li>
+<li><a href="#sec-conclusion">Conclusion</a></li>
+</ul>
+</section>
+<section id="sec-data-loading" class="level3">
+<h3 class="anchored" data-anchor-id="sec-data-loading">Data Loading and Preprocessing</h3>
+<p>First, we’ll import the necessary libraries and load our dataset. We’re working with an Excel file containing information about mortgage foreclosure cases.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler, LabelEncoder</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, mean_squared_error, r2_score</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> category_encoders <span class="im">import</span> TargetEncoder</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the data</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"/Users/piru/Desktop/tiempos actuaciones v2 por juzgados v3.xlsx"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sheet_name <span class="op">=</span> <span class="st">"Base3"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_excel(file_path, sheet_name<span class="op">=</span>sheet_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now that we have our data loaded, we need to clean it. This involves handling missing values, converting date fields, and ensuring all categorical variables are in the correct format.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean and preprocess data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[<span class="op">~</span>df[<span class="st">'foreclosure initial date'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="bu">isinstance</span>(x, time))]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">1</span>, how<span class="op">=</span><span class="st">'all'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">0</span>, how<span class="op">=</span><span class="st">'all'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">'Legal Stage'</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert dates and clean text fields</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'foreclosure initial date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'foreclosure initial date'</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'resolution date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'resolution date'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.<span class="bu">str</span>.upper() <span class="cf">if</span> x.dtype <span class="op">==</span> <span class="st">'object'</span> <span class="cf">else</span> x)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert boolean columns</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'etapa central'</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'etapa central'</span>] <span class="op">=</span> df[<span class="st">'etapa central'</span>].astype(<span class="st">'bool'</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'tiene casacion'</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'tiene casacion'</span>] <span class="op">=</span> df[<span class="st">'tiene casacion'</span>].astype(<span class="st">'bool'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We also need to ensure that our categorical variables are properly typed. This is important for later encoding steps and for the Random Forest model to handle these variables correctly.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define and apply data types</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data_types <span class="op">=</span> {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Legal Stage'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Portfolio Name'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Legal Proceeding'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'clave'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'resolution type'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'general type'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'zone'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'zone group'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'region'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Law Firm'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Judicial Court'</span>: <span class="st">'category'</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col, dtype <span class="kw">in</span> data_types.items():</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> col <span class="kw">in</span> df.columns:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        df[col] <span class="op">=</span> df[col].astype(dtype)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="sec-feature-engineering" class="level3">
+<h3 class="anchored" data-anchor-id="sec-feature-engineering">Feature Engineering</h3>
+<p>Now that our data is clean, we can start creating new features that might help predict the resolution time. We’ll focus on temporal aspects of the legal proceedings.</p>
+<p>First, let’s filter our data to include only foreclosure cases with a positive resolution time:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter dataframe for FORECLOSURE cases with time to solve &gt; 0.01</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[(df[<span class="st">'general type'</span>] <span class="op">==</span> <span class="st">'FORECLOSURE'</span>) <span class="op">&amp;</span> (df[<span class="st">'time to solve'</span>] <span class="op">&gt;</span> <span class="fl">0.01</span>)]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove legal proceedings with less than 5 occurrences</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>legal_proceeding_counts <span class="op">=</span> df[<span class="st">'Legal Proceeding'</span>].value_counts()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>valid_proceedings <span class="op">=</span> legal_proceeding_counts[legal_proceeding_counts <span class="op">&gt;=</span> <span class="dv">5</span>].index</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'Legal Proceeding'</span>].isin(valid_proceedings)]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure the dataframe is sorted by Legal File Name and Date</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.sort_values([<span class="st">'Legal File Name'</span>, <span class="st">'Date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now, let’s create our new features:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate new features</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Case_Start'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>)[<span class="st">'Date'</span>].transform(<span class="st">'min'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Months_Since_Start'</span>] <span class="op">=</span> (df[<span class="st">'Date'</span>] <span class="op">-</span> df[<span class="st">'Case_Start'</span>]).dt.days <span class="op">/</span> <span class="fl">30.44</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Proceeding_Count'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>).cumcount() <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Months_Since_Last_Proceeding'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>)[<span class="st">'Date'</span>].diff().dt.days <span class="op">/</span> <span class="fl">30.44</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Months_Since_Last_Proceeding'</span>] <span class="op">=</span> df[<span class="st">'Months_Since_Last_Proceeding'</span>].fillna(<span class="dv">1</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Average_Months_Between_Proceedings'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>)[<span class="st">'Months_Since_Last_Proceeding'</span>].transform(<span class="st">'mean'</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Distinct_Proceeding_Types'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>)[<span class="st">'Legal Proceeding'</span>].transform(<span class="st">'nunique'</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Repeated_Proceeding_Count'</span>] <span class="op">=</span> df.groupby([<span class="st">'Legal File Name'</span>, <span class="st">'Legal Proceeding'</span>]).cumcount() <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Previous_Proceeding'</span>] <span class="op">=</span> df.groupby(<span class="st">'Legal File Name'</span>)[<span class="st">'Legal Proceeding'</span>].shift(<span class="dv">1</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'Previous_Proceeding'</span>] <span class="op">=</span> df[<span class="st">'Previous_Proceeding'</span>].fillna(df[<span class="st">'Legal Proceeding'</span>])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Handle missing zone group</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'zone group'</span>] <span class="op">=</span> df[<span class="st">'zone group'</span>].fillna(df[<span class="st">'region'</span>])</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'zone group'</span>] <span class="op">=</span> pd.Categorical(df[<span class="st">'zone group'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>These new features capture various temporal aspects of each case, such as how long the case has been ongoing, how many proceedings have occurred, and the frequency of proceedings.</p>
+</section>
+<section id="sec-encoding" class="level3">
+<h3 class="anchored" data-anchor-id="sec-encoding">Encoding and Model Preparation</h3>
+<p>Before we can train our model, we need to encode our categorical variables. We’ll use Target Encoding for high-cardinality variables and Label Encoding for others.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Target Encoding for high-cardinality categorical variables</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>high_cardinality_cols <span class="op">=</span> [<span class="st">'Legal Proceeding'</span>, <span class="st">'Judicial Court'</span>, <span class="st">'Law Firm'</span>, <span class="st">'clave'</span>, <span class="st">'Previous_Proceeding'</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>te <span class="op">=</span> TargetEncoder()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df_encoded <span class="op">=</span> te.fit_transform(df[high_cardinality_cols], df[<span class="st">'time to solve'</span>])</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace original columns with target encoded versions</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> high_cardinality_cols:</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> df_encoded[col]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Label Encoding for other categorical variables</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>le <span class="op">=</span> LabelEncoder()</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>categorical_columns_to_encode <span class="op">=</span> [<span class="st">'Legal Stage'</span>, <span class="st">'Portfolio Name'</span>, <span class="st">'region'</span>, <span class="st">'zone group'</span>]</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> categorical_columns_to_encode:</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> le.fit_transform(df[col].astype(<span class="bu">str</span>))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> pd.Categorical(df[col])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we can define our features and prepare our data for modeling:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define features for modeling</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Legal Stage'</span>, <span class="st">'Legal Proceeding'</span>, <span class="st">'Portfolio Name'</span>, <span class="st">'zone group'</span>, <span class="st">'region'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Judicial Court'</span>, <span class="st">'Law Firm'</span>, <span class="st">'clave'</span>, <span class="st">'etapa central'</span>, <span class="st">'Months_Since_Start'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Proceeding_Count'</span>, <span class="st">'Months_Since_Last_Proceeding'</span>, <span class="st">'Average_Months_Between_Proceedings'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Distinct_Proceeding_Types'</span>, <span class="st">'Repeated_Proceeding_Count'</span>, <span class="st">'Previous_Proceeding'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'time to solve'</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare X and y for modeling</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> <span class="st">'time to solve'</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[features].drop(columns<span class="op">=</span>[target_col])</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[target_col]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="sec-model-training" class="level3">
+<h3 class="anchored" data-anchor-id="sec-model-training">Model Training and Evaluation</h3>
+<p>We’ll use a Random Forest Regressor for our prediction task. First, let’s split our data into training and testing sets:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the data</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Next, we need to scale our numerical features:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale numerical features</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>numerical_columns <span class="op">=</span> X.select_dtypes(include<span class="op">=</span>[<span class="st">'int64'</span>, <span class="st">'float64'</span>]).columns</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>X_train_scaled <span class="op">=</span> X_train.copy()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>X_test_scaled <span class="op">=</span> X_test.copy()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>X_train_scaled[numerical_columns] <span class="op">=</span> scaler.fit_transform(X_train[numerical_columns])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>X_test_scaled[numerical_columns] <span class="op">=</span> scaler.transform(X_test[numerical_columns])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we can train our Random Forest model:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train Random Forest model</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>rf_model <span class="op">=</span> RandomForestRegressor(n_estimators<span class="op">=</span><span class="dv">300</span>, min_samples_split<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                 min_samples_leaf<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                 bootstrap<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>rf_model.fit(X_train_scaled, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Finally, let’s make predictions and evaluate our model:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions and evaluate model</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> rf_model.predict(X_test_scaled)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mae <span class="op">=</span> mean_absolute_error(y_test, y_pred)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>mse <span class="op">=</span> mean_squared_error(y_test, y_pred)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(mse)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>r2 <span class="op">=</span> r2_score(y_test, y_pred)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Mean Absolute Error (MAE): </span><span class="sc">{</span>mae<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Root Mean Squared Error (RMSE): </span><span class="sc">{</span>rmse<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"R-squared (R2): </span><span class="sc">{</span>r2<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Mean Absolute Error (MAE): 4.887682724118453 Root Mean Squared Error (RMSE): 6.985917898599015 R-squared (R2): 0.9382800622825924</p>
+</section>
+<section id="sec-visualization" class="level3">
+<h3 class="anchored" data-anchor-id="sec-visualization">Visualization</h3>
+<p>To better understand our model’s performance and the importance of our features, we’ll create three visualizations.</p>
+<p>First, let’s look at the feature importance:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Feature Importance plot</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>feature_importance <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'feature'</span>: X.columns,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'importance'</span>: rf_model.feature_importances_</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>}).sort_values(<span class="st">'importance'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span><span class="st">'importance'</span>, y<span class="op">=</span><span class="st">'feature'</span>, data<span class="op">=</span>feature_importance.head(<span class="dv">20</span>))</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 20 Feature Importance from Random Forest'</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rf importance.png" class="img-fluid figure-img"></p>
+<figcaption>Feature Importance for Random Forest Model</figcaption>
+</figure>
+</div>
+<p>This plot shows us which features are most influential in our model’s predictions.</p>
+<p>Next, let’s compare our predictions to the actual values:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Actual vs Predicted plot</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(y_test, y_pred, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plt.plot([y_test.<span class="bu">min</span>(), y_test.<span class="bu">max</span>()], [y_test.<span class="bu">min</span>(), y_test.<span class="bu">max</span>()], <span class="st">'r--'</span>, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Actual'</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Predicted'</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Actual vs Predicted'</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="rf pred.png" class="img-fluid" alt="Random Forest Model Predictions vs Actual Resolution Times"> This plot helps us visualize how well our predictions match the actual values. Points closer to the red line indicate better predictions.</p>
+<p>Finally, let’s look at the residuals of our model:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual plot</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> y_test <span class="op">-</span> y_pred</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>plt.scatter(y_pred, residuals, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span><span class="dv">0</span>, color<span class="op">=</span><span class="st">'r'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Predicted'</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Residuals'</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Residual Plot'</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This plot helps us identify any patterns in our model’s errors, which could indicate areas for improvement.</p>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>This analysis demonstrates the use of a Random Forest model to predict resolution times for mortgage foreclosure cases. The model shows good performance with an R-squared value of about 0.94, indicating that it explains a large portion of the variance in resolution times.</p>
+<p>Key findings include:</p>
+<ol type="1">
+<li>The importance of temporal features like ‘Months_Since_Start’ and ‘Proceeding_Count’ in predicting resolution times.</li>
+<li>The model’s ability to capture both linear and non-linear relationships in the data.</li>
+<li>Areas for potential improvement, as seen in the residual plot.</li>
+</ol>
+<p>Future work could involve feature selection, hyperparameter tuning, or exploring other machine learning algorithms to potentially improve the model’s performance.</p>
+</section>
+</div>
+</div>
+</div>
+
+
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
