@@ -155,3 +155,270 @@ This visualization provides a clear ranking of the features that have the most s
 2.  **Explore Advanced Techniques:** Consider testing more advanced machine learning techniques in the future for further improvements
 
 3.  **Integrate with Financial Tools:** Integrate the model’s predictions into existing financial systems to support seamless decision-making and help structure DPO (Discounted Payoff) agreements more effectively.
+
+
+::: {.panel-tabset}
+
+## Code & Analysis
+
+### Data Loading and Preprocessing
+
+First, we'll import the necessary libraries and load our dataset. We're working with an Excel file containing information about mortgage foreclosure cases.
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from category_encoders import TargetEncoder
+
+# Load the data
+file_path = "/Users/piru/Desktop/tiempos actuaciones v2 por juzgados v3.xlsx"
+sheet_name = "Base3"
+df = pd.read_excel(file_path, sheet_name=sheet_name)
+```
+
+Now that we have our data loaded, we need to clean it. This involves handling missing values, converting date fields, and ensuring all categorical variables are in the correct format.
+
+```python
+# Clean and preprocess data
+df = df[~df['foreclosure initial date'].apply(lambda x: isinstance(x, time))]
+df.dropna(axis=1, how='all', inplace=True)
+df.dropna(axis=0, how='all', inplace=True)
+df = df.dropna(subset=['Legal Stage'])
+
+# Convert dates and clean text fields
+df['foreclosure initial date'] = pd.to_datetime(df['foreclosure initial date'])
+df['resolution date'] = pd.to_datetime(df['resolution date'], errors='coerce')
+df = df.apply(lambda x: x.str.upper() if x.dtype == 'object' else x)
+
+# Convert boolean columns
+if 'etapa central' in df.columns:
+    df['etapa central'] = df['etapa central'].astype('bool')
+if 'tiene casacion' in df.columns:
+    df['tiene casacion'] = df['tiene casacion'].astype('bool')
+```
+
+We also need to ensure that our categorical variables are properly typed. This is important for later encoding steps and for the Random Forest model to handle these variables correctly.
+
+```python
+# Define and apply data types
+data_types = {
+    'Legal Stage': 'category',
+    'Portfolio Name': 'category',
+    'Legal Proceeding': 'category',
+    'clave': 'category',
+    'resolution type': 'category',
+    'general type': 'category',
+    'zone': 'category',
+    'zone group': 'category',
+    'region': 'category',
+    'Law Firm': 'category',
+    'Judicial Court': 'category',
+}
+
+for col, dtype in data_types.items():
+    if col in df.columns:
+        df[col] = df[col].astype(dtype)
+```
+
+### Feature Engineering
+
+Now that our data is clean, we can start creating new features that might help predict the resolution time. We'll focus on temporal aspects of the legal proceedings.
+
+First, let's filter our data to include only foreclosure cases with a positive resolution time:
+
+```python
+# Filter dataframe for FORECLOSURE cases with time to solve > 0.01
+df = df[(df['general type'] == 'FORECLOSURE') & (df['time to solve'] > 0.01)]
+
+# Remove legal proceedings with less than 5 occurrences
+legal_proceeding_counts = df['Legal Proceeding'].value_counts()
+valid_proceedings = legal_proceeding_counts[legal_proceeding_counts >= 5].index
+df = df[df['Legal Proceeding'].isin(valid_proceedings)]
+
+# Ensure the dataframe is sorted by Legal File Name and Date
+df = df.sort_values(['Legal File Name', 'Date'])
+```
+
+Now, let's create our new features:
+
+```python
+# Calculate new features
+df['Case_Start'] = df.groupby('Legal File Name')['Date'].transform('min')
+df['Months_Since_Start'] = (df['Date'] - df['Case_Start']).dt.days / 30.44
+df['Proceeding_Count'] = df.groupby('Legal File Name').cumcount() + 1
+df['Months_Since_Last_Proceeding'] = df.groupby('Legal File Name')['Date'].diff().dt.days / 30.44
+df['Months_Since_Last_Proceeding'] = df['Months_Since_Last_Proceeding'].fillna(1)
+df['Average_Months_Between_Proceedings'] = df.groupby('Legal File Name')['Months_Since_Last_Proceeding'].transform('mean')
+df['Distinct_Proceeding_Types'] = df.groupby('Legal File Name')['Legal Proceeding'].transform('nunique')
+df['Repeated_Proceeding_Count'] = df.groupby(['Legal File Name', 'Legal Proceeding']).cumcount() + 1
+df['Previous_Proceeding'] = df.groupby('Legal File Name')['Legal Proceeding'].shift(1)
+df['Previous_Proceeding'] = df['Previous_Proceeding'].fillna(df['Legal Proceeding'])
+
+# Handle missing zone group
+df['zone group'] = df['zone group'].fillna(df['region'])
+df['zone group'] = pd.Categorical(df['zone group'])
+```
+
+These new features capture various temporal aspects of each case, such as how long the case has been ongoing, how many proceedings have occurred, and the frequency of proceedings.
+
+### Encoding and Model Preparation
+
+Before we can train our model, we need to encode our categorical variables. We'll use Target Encoding for high-cardinality variables and Label Encoding for others.
+
+```python
+# Target Encoding for high-cardinality categorical variables
+high_cardinality_cols = ['Legal Proceeding', 'Judicial Court', 'Law Firm', 'clave', 'Previous_Proceeding']
+te = TargetEncoder()
+df_encoded = te.fit_transform(df[high_cardinality_cols], df['time to solve'])
+
+# Replace original columns with target encoded versions
+for col in high_cardinality_cols:
+    df[col] = df_encoded[col]
+
+# Label Encoding for other categorical variables
+le = LabelEncoder()
+categorical_columns_to_encode = ['Legal Stage', 'Portfolio Name', 'region', 'zone group']
+for col in categorical_columns_to_encode:
+    df[col] = le.fit_transform(df[col].astype(str))
+    df[col] = pd.Categorical(df[col])
+```
+
+Now we can define our features and prepare our data for modeling:
+
+```python
+# Define features for modeling
+features = [
+    'Legal Stage', 'Legal Proceeding', 'Portfolio Name', 'zone group', 'region',
+    'Judicial Court', 'Law Firm', 'clave', 'etapa central', 'Months_Since_Start',
+    'Proceeding_Count', 'Months_Since_Last_Proceeding', 'Average_Months_Between_Proceedings',
+    'Distinct_Proceeding_Types', 'Repeated_Proceeding_Count', 'Previous_Proceeding',
+    'time to solve'
+]
+
+# Prepare X and y for modeling
+target_col = 'time to solve'
+X = df[features].drop(columns=[target_col])
+y = df[target_col]
+```
+
+### Model Training and Evaluation
+
+We'll use a Random Forest Regressor for our prediction task. First, let's split our data into training and testing sets:
+
+```python
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+Next, we need to scale our numerical features:
+
+```python
+# Scale numerical features
+numerical_columns = X.select_dtypes(include=['int64', 'float64']).columns
+scaler = StandardScaler()
+X_train_scaled = X_train.copy()
+X_test_scaled = X_test.copy()
+X_train_scaled[numerical_columns] = scaler.fit_transform(X_train[numerical_columns])
+X_test_scaled[numerical_columns] = scaler.transform(X_test[numerical_columns])
+```
+
+Now we can train our Random Forest model:
+
+```python
+# Train Random Forest model
+rf_model = RandomForestRegressor(n_estimators=300, min_samples_split=2, 
+                                 min_samples_leaf=1, max_depth=None, 
+                                 bootstrap=True, random_state=42)
+rf_model.fit(X_train_scaled, y_train)
+```
+
+Finally, let's make predictions and evaluate our model:
+
+```python
+# Make predictions and evaluate model
+y_pred = rf_model.predict(X_test_scaled)
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Absolute Error (MAE): {mae}")
+print(f"Root Mean Squared Error (RMSE): {rmse}")
+print(f"R-squared (R2): {r2}")
+```
+
+### Visualization
+
+To better understand our model's performance and the importance of our features, we'll create three visualizations.
+
+First, let's look at the feature importance:
+
+```python
+# Feature Importance plot
+feature_importance = pd.DataFrame({
+    'feature': X.columns,
+    'importance': rf_model.feature_importances_
+}).sort_values('importance', ascending=False)
+
+plt.figure(figsize=(12, 8))
+sns.barplot(x='importance', y='feature', data=feature_importance.head(20))
+plt.title('Top 20 Feature Importance from Random Forest')
+plt.tight_layout()
+plt.show()
+```
+
+This plot shows us which features are most influential in our model's predictions.
+
+Next, let's compare our predictions to the actual values:
+
+```python
+# Actual vs Predicted plot
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, y_pred, alpha=0.5)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Actual vs Predicted')
+plt.tight_layout()
+plt.show()
+```
+
+This plot helps us visualize how well our predictions match the actual values. Points closer to the red line indicate better predictions.
+
+Finally, let's look at the residuals of our model:
+
+```python
+# Residual plot
+residuals = y_test - y_pred
+plt.figure(figsize=(10, 6))
+plt.scatter(y_pred, residuals, alpha=0.5)
+plt.axhline(y=0, color='r', linestyle='--')
+plt.xlabel('Predicted')
+plt.ylabel('Residuals')
+plt.title('Residual Plot')
+plt.tight_layout()
+plt.show()
+```
+
+This plot helps us identify any patterns in our model's errors, which could indicate areas for improvement.
+
+## Conclusion
+
+This analysis demonstrates the use of a Random Forest model to predict resolution times for mortgage foreclosure cases. The model shows good performance with an R-squared value of about 0.94, indicating that it explains a large portion of the variance in resolution times. 
+
+Key findings include:
+1. The importance of temporal features like 'Months_Since_Start' and 'Proceeding_Count' in predicting resolution times.
+2. The model's ability to capture both linear and non-linear relationships in the data.
+3. Areas for potential improvement, as seen in the residual plot.
+
+Future work could involve feature selection, hyperparameter tuning, or exploring other machine learning algorithms to potentially improve the model's performance.
+
+:::
+
+
