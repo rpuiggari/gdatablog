@@ -14,7 +14,7 @@ format:
 
 ## Summary
 
-We developed a new method to predict how long foreclosure cases will take to resolve. This approach is more accurate than our previous method, which will help us make better financial decisions and manage our mortgage portfolio more effectively.
+Our dataset is designed to manage Non-Performing Loans (NPLs) by predicting the legal resolution times of foreclosure cases, focusing on the duration of each legal proceeding. We have developed a new model that significantly improves the accuracy of these predictions, helping us better understand and manage the complexities of foreclosure processes. Given that NPLs often involve high Loan-to-Value (LTV) ratios and extended delinquency periods, accurately predicting the "time to solve" from each legal proceeding stege is critical for effective risk management and decision-making in mortgage portfolios.
 
 Key Points:
 

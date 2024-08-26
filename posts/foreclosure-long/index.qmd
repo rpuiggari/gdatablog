@@ -19,12 +19,12 @@ image: "casa5.jpg"
 - [Recommendations](#sec-recommendations)
 
 ### Introduction {#sec-introduction}
+Accurate prediction of foreclosure timelines is critical for optimizing the valuation of distressed mortgage assets. Foreclosure dates play a crucial role in estimating asset recovery values within a mortgage portfolio, serving as a baseline for portfolio valuation and the structuring of settlements or other termination strategies. The ability to forecast these timelines with precision allows for better risk management, enhanced asset recovery, and more informed decisions regarding portfolio performance.
 
-Accurate prediction of foreclosure timelines is critical for optimizing the valuation of distressed mortgage assets. Foreclosure dates significantly impact the estimation of asset recovery values within a mortgage portfolio, which in turn serves as a baseline for portfolio valuation and the structuring of settlements or other termination strategies. The ability to forecast these timelines with precision allows to better manage risk, enhance asset recovery, and make informed decisions regarding portfolio performance. This report examines the current predictive model for foreclosure times and introduces an enhanced approach aimed at improving the accuracy and reliability of these predictions to better support strategic financial decisions.
+This report examines the current predictive model for foreclosure times and introduces an enhanced approach aimed at improving the accuracy and reliability of these predictions. The new model focuses on predicting the duration required to resolve each legal proceeding within foreclosure cases, offering significant improvements in accuracy. These advancements are essential for supporting strategic financial decisions and effectively managing Non-Performing Loans (NPLs), which often involve high Loan-to-Value (LTV) ratios and extended delinquency periods
 
 ### Dataset Description {#sec-dataset}
-
-The dataset used in this project contains detailed information on mortgage foreclosure cases in Peru, including various legal proceedings associated with each case. This data is crucial for understanding the factors that influence the time it takes to resolve these cases. Key columns in the dataset include:
+The dataset used in this project contains detailed information on over 1,200 mortgage foreclosure cases in Peru, each of which has been fully resolved. For each case, the dataset includes all the legal proceedings that occurred throughout its duration. This comprehensive data is crucial for understanding the factors that influence the time it takes to resolve these cases, providing a solid foundation for the predictive models developed in this project. Key columns in the dataset include:
 
 -   **Portfolio Name**: Identifies the portfolio to which the legal case belongs.
 
@@ -40,7 +40,7 @@ The dataset used in this project contains detailed information on mortgage forec
 
 -   **Resolution Date**: The date when the case was resolved.
 
--   **Time to Solve**: The duration between the start and resolution of the case.
+-   **Time to Solve**: The duration between the date of the proceeding and the resolution of the case.
 
 -   **Geographical Information**: Including **Zone**, **Region**, and **Zone Group**, which provide context on where the case is being handled.
 
@@ -48,13 +48,24 @@ The dataset used in this project contains detailed information on mortgage forec
 
 ### Methodology for Evaluating Regression Models {#sec-methodology}
 
-To ensure our predictive model is accurate and reliable, we use several key metrics to evaluate its performance:
+To ensure our predictive model's accuracy and reliability, we use three key evaluation metrics:
 
-·       **Mean Absolute Error (MAE):** This metric shows the average difference between the predicted and actual resolution times. In simpler terms, it tells us, on average, how many months the model's predictions are off. The lower the MAE, the more accurate the model.
+1. **Mean Absolute Error (MAE)**
+   - Measures the average difference between predicted and actual resolution times
+   - Interpreted as: On average, how many months off are the model's predictions?
+   - Lower MAE indicates higher accuracy
 
-·       **Root Mean Squared Error (RMSE):** RMSE is similar to MAE but gives more weight to larger errors. It provides a clearer picture of how often the model makes bigger mistakes in predicting resolution times. Again, lower values indicate a better-performing model.
+2. **Root Mean Squared Error (RMSE)**
+   - Similar to MAE, but gives more weight to larger errors
+   - Provides insight into the magnitude of the model's prediction mistakes
+   - Lower RMSE suggests better model performance
 
-·       **R-squared (R²):** R² explains how well the model’s predictions match the actual outcomes. It's expressed as a percentage, where a higher value means the model does a good job of capturing the key factors that determine resolution times. For example, an R² of 0.94 means that the model explains 94% of the variations in resolution times, leaving only 6% unexplained.
+3. **R-squared (R²)**
+   - Explains how well the model's predictions match actual outcomes
+   - Expressed as a percentage (0-100%)
+   - Higher R² indicates the model captures more factors influencing resolution times
+   - Example: R² of 0.94 means the model explains 94% of variations in resolution times
+
 
 ### Approach for Current Model {#sec-current-model}
 
@@ -423,8 +434,9 @@ plt.title('Residual Plot')
 plt.tight_layout()
 plt.show()
 ```
+![Residual Plot for Random Forest Model](residuals.png)
 
-This plot helps us identify any patterns in our model's errors, which could indicate areas for improvement.
+This residual plot visualizes our model's prediction errors, offering insights into its performance. It helps identify potential biases, assess accuracy across different prediction ranges, and detect error patterns. The scatter of points around the zero line (red dashed) shows how errors vary with predicted values. A random, evenly distributed scatter suggests a well-performing model, while clear patterns may indicate areas where the model struggles. This visualization is key for evaluating the model's reliability and pinpointing areas for improvement in our forecasting approach.
 
 ### Conclusion
 
