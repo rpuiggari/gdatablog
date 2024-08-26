@@ -24,7 +24,7 @@ Accurate prediction of foreclosure timelines is critical for optimizing the valu
 This report examines the current predictive model for foreclosure times and introduces an enhanced approach aimed at improving the accuracy and reliability of these predictions. The new model focuses on predicting the duration required to resolve each legal proceeding within foreclosure cases, offering significant improvements in accuracy. These advancements are essential for supporting strategic financial decisions and effectively managing Non-Performing Loans (NPLs), which often involve high Loan-to-Value (LTV) ratios and extended delinquency periods
 
 ### Dataset Description {#sec-dataset}
-The dataset used in this project contains detailed information on over 1,200 mortgage foreclosure cases in Peru, each of which has been fully resolved. For each case, the dataset includes all the legal proceedings that occurred throughout its duration. This comprehensive data is crucial for understanding the factors that influence the time it takes to resolve these cases, providing a solid foundation for the predictive models developed in this project. Key columns in the dataset include:
+The dataset used in this project contains detailed information on over 1,200 mortgage foreclosure cases, each of which has been fully resolved. For each case, the dataset includes all the legal proceedings that occurred throughout its duration. This comprehensive data is crucial for understanding the factors that influence the time it takes to resolve these cases, providing a solid foundation for the predictive models developed in this project. Key columns in the dataset include:
 
 -   **Portfolio Name**: Identifies the portfolio to which the legal case belongs.
 
