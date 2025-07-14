@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Piru Puiggari">
+<meta name="dcterms.date" content="2024-12-15">
+
+<title>Building a Financial Portfolio Analysis Tool with R Shiny – G’data by Piru</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">G’data by Piru</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Building a Financial Portfolio Analysis Tool with R Shiny</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">shiny</div>
+                <div class="quarto-category">finance</div>
+                <div class="quarto-category">portfolio-analysis</div>
+                <div class="quarto-category">interactive-dashboard</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Piru Puiggari </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 15, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary"><span class="header-section-number">1</span> Summary</a></li>
+  <li><a href="#why-this-tool-matters" id="toc-why-this-tool-matters" class="nav-link" data-scroll-target="#why-this-tool-matters"><span class="header-section-number">2</span> Why This Tool Matters</a></li>
+  <li><a href="#technical-architecture" id="toc-technical-architecture" class="nav-link" data-scroll-target="#technical-architecture"><span class="header-section-number">3</span> Technical Architecture</a>
+  <ul class="collapse">
+  <li><a href="#core-financial-functions" id="toc-core-financial-functions" class="nav-link" data-scroll-target="#core-financial-functions"><span class="header-section-number">3.1</span> Core Financial Functions</a></li>
+  <li><a href="#key-performance-indicators" id="toc-key-performance-indicators" class="nav-link" data-scroll-target="#key-performance-indicators"><span class="header-section-number">3.2</span> Key Performance Indicators</a></li>
+  <li><a href="#advanced-features" id="toc-advanced-features" class="nav-link" data-scroll-target="#advanced-features"><span class="header-section-number">3.3</span> Advanced Features</a></li>
+  </ul></li>
+  <li><a href="#user-interface-design" id="toc-user-interface-design" class="nav-link" data-scroll-target="#user-interface-design"><span class="header-section-number">4</span> User Interface Design</a>
+  <ul class="collapse">
+  <li><a href="#modern-bootstrap-theme" id="toc-modern-bootstrap-theme" class="nav-link" data-scroll-target="#modern-bootstrap-theme"><span class="header-section-number">4.1</span> Modern Bootstrap Theme</a></li>
+  <li><a href="#interactive-components" id="toc-interactive-components" class="nav-link" data-scroll-target="#interactive-components"><span class="header-section-number">4.2</span> Interactive Components</a></li>
+  </ul></li>
+  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization"><span class="header-section-number">5</span> Data Visualization</a>
+  <ul class="collapse">
+  <li><a href="#component-breakdown-chart" id="toc-component-breakdown-chart" class="nav-link" data-scroll-target="#component-breakdown-chart"><span class="header-section-number">5.1</span> Component Breakdown Chart</a></li>
+  <li><a href="#cumulative-cash-flow-analysis" id="toc-cumulative-cash-flow-analysis" class="nav-link" data-scroll-target="#cumulative-cash-flow-analysis"><span class="header-section-number">5.2</span> Cumulative Cash Flow Analysis</a></li>
+  </ul></li>
+  <li><a href="#real-world-applications" id="toc-real-world-applications" class="nav-link" data-scroll-target="#real-world-applications"><span class="header-section-number">6</span> Real-World Applications</a>
+  <ul class="collapse">
+  <li><a href="#investment-decision-support" id="toc-investment-decision-support" class="nav-link" data-scroll-target="#investment-decision-support"><span class="header-section-number">6.1</span> Investment Decision Support</a></li>
+  <li><a href="#portfolio-management" id="toc-portfolio-management" class="nav-link" data-scroll-target="#portfolio-management"><span class="header-section-number">6.2</span> Portfolio Management</a></li>
+  </ul></li>
+  <li><a href="#technical-implementation-highlights" id="toc-technical-implementation-highlights" class="nav-link" data-scroll-target="#technical-implementation-highlights"><span class="header-section-number">7</span> Technical Implementation Highlights</a>
+  <ul class="collapse">
+  <li><a href="#reactive-programming" id="toc-reactive-programming" class="nav-link" data-scroll-target="#reactive-programming"><span class="header-section-number">7.1</span> Reactive Programming</a></li>
+  <li><a href="#performance-optimization" id="toc-performance-optimization" class="nav-link" data-scroll-target="#performance-optimization"><span class="header-section-number">7.2</span> Performance Optimization</a></li>
+  <li><a href="#error-handling" id="toc-error-handling" class="nav-link" data-scroll-target="#error-handling"><span class="header-section-number">7.3</span> Error Handling</a></li>
+  </ul></li>
+  <li><a href="#results-and-impact" id="toc-results-and-impact" class="nav-link" data-scroll-target="#results-and-impact"><span class="header-section-number">8</span> Results and Impact</a>
+  <ul class="collapse">
+  <li><a href="#financial-accuracy" id="toc-financial-accuracy" class="nav-link" data-scroll-target="#financial-accuracy"><span class="header-section-number">8.1</span> Financial Accuracy</a></li>
+  <li><a href="#user-experience" id="toc-user-experience" class="nav-link" data-scroll-target="#user-experience"><span class="header-section-number">8.2</span> User Experience</a></li>
+  <li><a href="#business-value" id="toc-business-value" class="nav-link" data-scroll-target="#business-value"><span class="header-section-number">8.3</span> Business Value</a></li>
+  <li><a href="#technical-improvements" id="toc-technical-improvements" class="nav-link" data-scroll-target="#technical-improvements"><span class="header-section-number">8.4</span> Technical Improvements</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">9</span> Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="summary" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="summary"><span class="header-section-number">1</span> Summary</h2>
+<p>I’ve developed an interactive R Shiny application that analyzes the performance of loan portfolios, providing comprehensive financial metrics and visualizations for investment decision-making. The tool calculates key performance indicators including ROI, IRR, payback periods, and tax implications, making it invaluable for portfolio managers and financial analysts.</p>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li><p><strong>Interactive amortization calculations</strong> with French payment system</p></li>
+<li><p><strong>Dual input modes</strong>: Capital amount or target tax recovery</p></li>
+<li><p><strong>Real-time financial metrics</strong> including ROI, IRR, and payback analysis</p></li>
+<li><p><strong>Advanced visualizations</strong> showing component breakdown and cumulative cash flows</p></li>
+<li><p><strong>Tax optimization</strong> with IVA calculations and purchase tax implications</p></li>
+<li><p><strong>Responsive design</strong> with modern UI/UX using Bootstrap themes</p></li>
+</ul>
+</section>
+<section id="why-this-tool-matters" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="why-this-tool-matters"><span class="header-section-number">2</span> Why This Tool Matters</h2>
+<p>Portfolio performance analysis is crucial for making informed investment decisions in the financial sector. This application addresses several key challenges:</p>
+<ol type="1">
+<li><p><strong>Standardized Analysis</strong>: Provides consistent methodology for evaluating different portfolio opportunities</p></li>
+<li><p><strong>Tax Optimization</strong>: Incorporates complex tax calculations (IVA) that significantly impact returns</p></li>
+<li><p><strong>Risk Assessment</strong>: Includes delinquency rate modeling to assess realistic performance scenarios</p></li>
+<li><p><strong>Decision Support</strong>: Delivers actionable insights through interactive visualizations</p></li>
+</ol>
+</section>
+<section id="technical-architecture" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="technical-architecture"><span class="header-section-number">3</span> Technical Architecture</h2>
+<section id="core-financial-functions" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="core-financial-functions"><span class="header-section-number">3.1</span> Core Financial Functions</h3>
+<p>The application implements several sophisticated financial calculations:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># French amortization system with tax calculations</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pmt <span class="ot">&lt;-</span> <span class="cf">function</span>(rate, nper, pv) <span class="sc">-</span>(pv <span class="sc">*</span> rate) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">+</span> rate)<span class="sc">^</span>(<span class="sc">-</span>nper))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>amort_tbl <span class="ot">&lt;-</span> <span class="cf">function</span>(capital, tasa_anual, n_cuotas, iva_rate) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  tasa_m <span class="ot">&lt;-</span> tasa_anual <span class="sc">/</span> <span class="dv">12</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  cuota  <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">pmt</span>(tasa_m, n_cuotas, <span class="sc">-</span>capital))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ... detailed amortization logic</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="key-performance-indicators" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="key-performance-indicators"><span class="header-section-number">3.2</span> Key Performance Indicators</h3>
+<p>The <code>calc_kpis()</code> function computes essential metrics:</p>
+<ul>
+<li><p><strong>Net Present Value (NPV)</strong>: Using constant cash flows for valuation</p></li>
+<li><p><strong>Internal Rate of Return (IRR)</strong>: Calculated through numerical optimization</p></li>
+<li><p><strong>Payback Period</strong>: Time to recover initial investment</p></li>
+<li><p><strong>Duration</strong>: Weighted average time to cash flow recovery</p></li>
+<li><p><strong>ROI Ratios</strong>: Multiple return calculations with tax considerations</p></li>
+</ul>
+</section>
+<section id="advanced-features" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="advanced-features"><span class="header-section-number">3.3</span> Advanced Features</h3>
+<p><strong>Dual Input Modes:</strong></p>
+<ul>
+<li><p><strong>Capital Mode</strong>: Start with portfolio value, calculate expected returns</p></li>
+<li><p><strong>Tax Recovery Mode</strong>: Reverse-engineer required capital from target tax benefits</p></li>
+</ul>
+<p><strong>Delinquency Modeling:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply delinquency rates to realistic cash flows</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mora <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  tabla_con_mora <span class="ot">&lt;-</span> tabla_original <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(Pago_principal, Pago_interes, IVA, Cuota, Flujo_neto, <span class="st">`</span><span class="at">Cuota+IVA</span><span class="st">`</span>), </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                  <span class="sc">~</span> .x <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> mora)))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="user-interface-design" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="user-interface-design"><span class="header-section-number">4</span> User Interface Design</h2>
+<section id="modern-bootstrap-theme" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="modern-bootstrap-theme"><span class="header-section-number">4.1</span> Modern Bootstrap Theme</h3>
+<p>The application uses a custom Bootstrap theme with:</p>
+<ul>
+<li><p><strong>Gradient buttons</strong> and hover effects</p></li>
+<li><p><strong>Card-based layouts</strong> for better content organization</p></li>
+<li><p><strong>Font Awesome icons</strong> for visual enhancement</p></li>
+<li><p><strong>Responsive grid system</strong> for mobile compatibility</p></li>
+</ul>
+</section>
+<section id="interactive-components" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="interactive-components"><span class="header-section-number">4.2</span> Interactive Components</h3>
+<p><strong>Dynamic Value Boxes:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>customValueBox <span class="ot">&lt;-</span> <span class="cf">function</span>(value, subtitle, color, <span class="at">icon =</span> <span class="cn">NULL</span>){</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Custom HTML components with hover effects and animations</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Tabbed Interface:</strong></p>
+<ul>
+<li><p><strong>Summary Tab</strong>: Key metrics and amortization table</p></li>
+<li><p><strong>Advanced Analysis Tab</strong>: Detailed charts and extended KPIs</p></li>
+</ul>
+</section>
+</section>
+<section id="data-visualization" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="data-visualization"><span class="header-section-number">5</span> Data Visualization</h2>
+<section id="component-breakdown-chart" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="component-breakdown-chart"><span class="header-section-number">5.1</span> Component Breakdown Chart</h3>
+<p>Interactive Plotly visualization showing:</p>
+<ul>
+<li><p><strong>Capital recovery</strong> over time</p></li>
+<li><p><strong>Interest accumulation</strong> patterns</p></li>
+<li><p><strong>Tax implications</strong> (IVA) timeline</p></li>
+<li><p><strong>Constant cash flow</strong> comparison</p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ly</span>(<span class="at">data =</span> breakdown_long, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="sc">~</span>Vida_util_pct, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="sc">~</span>Valor_acum, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="sc">~</span>Componente,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">type =</span> <span class="st">'scatter'</span>, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">mode =</span> <span class="st">'lines+markers'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="cumulative-cash-flow-analysis" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="cumulative-cash-flow-analysis"><span class="header-section-number">5.2</span> Cumulative Cash Flow Analysis</h3>
+<p>Shows portfolio performance against purchase price with:</p>
+<ul>
+<li><p><strong>Payback period</strong> visualization</p></li>
+<li><p><strong>Break-even analysis</strong></p></li>
+<li><p><strong>Performance trajectory</strong> over portfolio life</p></li>
+</ul>
+</section>
+</section>
+<section id="real-world-applications" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="real-world-applications"><span class="header-section-number">6</span> Real-World Applications</h2>
+<section id="investment-decision-support" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="investment-decision-support"><span class="header-section-number">6.1</span> Investment Decision Support</h3>
+<p>The tool helps analysts:</p>
+<ol type="1">
+<li><p><strong>Compare portfolio opportunities</strong> with standardized metrics</p></li>
+<li><p><strong>Optimize tax strategies</strong> through IVA calculations</p></li>
+<li><p><strong>Model different scenarios</strong> with varying delinquency rates</p></li>
+<li><p><strong>Assess risk-return profiles</strong> across different time horizons</p></li>
+</ol>
+</section>
+<section id="portfolio-management" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="portfolio-management"><span class="header-section-number">6.2</span> Portfolio Management</h3>
+<p>Key use cases include:</p>
+<ul>
+<li><p><strong>Due diligence</strong> on new acquisitions</p></li>
+<li><p><strong>Performance monitoring</strong> of existing portfolios</p></li>
+<li><p><strong>Strategic planning</strong> for portfolio optimization</p></li>
+<li><p><strong>Client reporting</strong> with professional visualizations</p></li>
+</ul>
+</section>
+</section>
+<section id="technical-implementation-highlights" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="technical-implementation-highlights"><span class="header-section-number">7</span> Technical Implementation Highlights</h2>
+<section id="reactive-programming" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="reactive-programming"><span class="header-section-number">7.1</span> Reactive Programming</h3>
+<p>Efficient use of Shiny’s reactivity:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">eventReactive</span>(input<span class="sc">$</span>calcular, {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Complex financial calculations triggered only when needed</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="performance-optimization" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="performance-optimization"><span class="header-section-number">7.2</span> Performance Optimization</h3>
+<ul>
+<li><p><strong>Conditional panels</strong> for dynamic UI updates</p></li>
+<li><p><strong>Efficient data processing</strong> with dplyr pipelines</p></li>
+<li><p><strong>Optimized rendering</strong> for large datasets</p></li>
+</ul>
+</section>
+<section id="error-handling" class="level3" data-number="7.3">
+<h3 data-number="7.3" class="anchored" data-anchor-id="error-handling"><span class="header-section-number">7.3</span> Error Handling</h3>
+<p>Robust numerical methods:</p>
+<pre><code>irr &lt;- tryCatch(uniroot(irr_fun, c(0, 2))$root, 
+                error = function(e) NA)</code></pre>
+</section>
+</section>
+<section id="results-and-impact" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="results-and-impact"><span class="header-section-number">8</span> Results and Impact</h2>
+<section id="financial-accuracy" class="level3" data-number="8.1">
+<h3 data-number="8.1" class="anchored" data-anchor-id="financial-accuracy"><span class="header-section-number">8.1</span> Financial Accuracy</h3>
+<p>The application provides:</p>
+<ul>
+<li><p><strong>Precise NPV calculations</strong> using industry-standard methods</p></li>
+<li><p><strong>Accurate tax modeling</strong> incorporating complex IVA regulations</p></li>
+<li><p><strong>Realistic performance projections</strong> with delinquency adjustments</p></li>
+</ul>
+</section>
+<section id="user-experience" class="level3" data-number="8.2">
+<h3 data-number="8.2" class="anchored" data-anchor-id="user-experience"><span class="header-section-number">8.2</span> User Experience</h3>
+<ul>
+<li><p><strong>Intuitive interface</strong> requiring minimal financial expertise</p></li>
+<li><p><strong>Interactive visualizations</strong> for better insight discovery</p></li>
+<li><p><strong>Professional reporting</strong> suitable for stakeholder presentations</p></li>
+</ul>
+</section>
+<section id="business-value" class="level3" data-number="8.3">
+<h3 data-number="8.3" class="anchored" data-anchor-id="business-value"><span class="header-section-number">8.3</span> Business Value</h3>
+<ul>
+<li><p><strong>Faster decision-making</strong> through automated calculations</p></li>
+<li><p><strong>Reduced errors</strong> in complex financial modeling</p></li>
+<li><p><strong>Enhanced transparency</strong> in portfolio evaluation processes</p></li>
+</ul>
+</section>
+<section id="technical-improvements" class="level3" data-number="8.4">
+<h3 data-number="8.4" class="anchored" data-anchor-id="technical-improvements"><span class="header-section-number">8.4</span> Technical Improvements</h3>
+<ul>
+<li><p><strong>API Integration</strong>: Connect with external financial data sources</p></li>
+<li><p><strong>Machine Learning</strong>: Predictive modeling for delinquency rates</p></li>
+<li><p><strong>Advanced Charts</strong>: Time-series analysis and trend visualization</p></li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">9</span> Conclusion</h2>
+<p>This R Shiny application demonstrates how interactive web applications can transform complex financial analysis into accessible, actionable insights. By combining sophisticated financial modeling with modern web technologies, it provides a powerful tool for portfolio analysis that bridges the gap between technical complexity and business usability.</p>
+<p>The application showcases several key technical achievements:</p>
+<ul>
+<li><p><strong>Robust financial calculations</strong> with proper error handling</p></li>
+<li><p><strong>Modern UI/UX design</strong> using Bootstrap and custom CSS</p></li>
+<li><p><strong>Interactive visualizations</strong> with Plotly integration</p></li>
+<li><p><strong>Flexible input modes</strong> for different analysis scenarios</p></li>
+</ul>
+<p>For financial professionals, this tool represents a significant improvement in analytical capability, enabling faster, more accurate, and more comprehensive portfolio evaluation processes.</p>
+<hr>
+<p><em>The complete source code for this application is available, demonstrating practical implementation of financial modeling in R Shiny with production-ready features and professional presentation.</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
