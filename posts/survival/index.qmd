@@ -4,6 +4,10 @@ author: "Ricardo Puiggari"
 date: "2024-12-28"
 categories: ["Data Science", "Survival Analysis", "Finance"]
 tags: ["Python", "lifelines", "Kaplan–Meier", "Cox Regression", "Time-Varying"]
+description: |
+  Managing Non-Performing Loans (NPLs) requires accurate predictions of how long…
+  By combining Kaplan–Meier, CoxPH and Cox Time-Varying models, we uncover which factors speed up or slow down closure – insights critical for valuing distressed assets and allocating legal resources.
+image: "timewatch.png"
 format:
   html:
     toc: true

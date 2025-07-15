@@ -4,6 +4,9 @@ author: "Ricardo Puiggari"
 date: 2024-12-15
 categories: ["Shiny", "Finance", "R"]
 tags: ["shiny", "finance", "portfolio-analysis", "interactive-dashboard"]
+description: |
+  Step-by-step guide to an R Shiny dashboard for loan portfolios: amortization & VAT recovery, modular architecture, Plotly/DT visuals, performance profiling & testing.
+image: "r.png"
 format:
   html:
     toc: true
@@ -32,6 +35,8 @@ In this post, we’ll walk through how I built a production‑ready R Shiny app 
 5. **Best practices**: Profiling, testing, and continuous deployment.
 
 By the end, you’ll have a template to adapt for your own finance dashboards and see how to structure Shiny apps for maintainability and performance.
+
+Explore the source code on [GitHub](https://github.com/rpuiggari/carteras) and try the live Shiny app on [ShinyApps.io](https://rpuiggari.shinyapps.io/carteras_iva/).
 
 ---
 
@@ -180,6 +185,6 @@ execute:
 
 # Conclusion
 
-This Shiny app demonstrates how to combine robust financial calculations, polished UI, and best practices in testing and deployment. Feel free to explore the [source code on GitHub](https://github.com/rpuiggari/gdatablog) and adapt the patterns for your own projects!
+This Shiny app demonstrates how to combine robust financial calculations, polished UI, and best practices in testing and deployment. Feel free to explore the [source code on GitHub](https://github.com/rpuiggari/gdatablog) and adapt the patterns for your own projects.
 
-Happy coding! 🧮🚀
+
