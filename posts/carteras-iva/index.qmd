@@ -16,6 +16,8 @@ format:
 
 I've developed an interactive R Shiny application that analyzes the performance of loan portfolios, providing comprehensive financial metrics and visualizations for investment decision-making. The tool calculates key performance indicators including ROI, IRR, payback periods, and tax implications, making it invaluable for portfolio managers and financial analysts.
 
+[**Try the live application**](https://rpuiggari.shinyapps.io/carteras_iva/) \| [**View source code on GitHub**](https://github.com/rpuiggari/carteras)
+
 **Key Features:**
 
 -   **Interactive amortization calculations** with French payment system
@@ -48,7 +50,7 @@ Portfolio performance analysis is crucial for making informed investment decisio
 
 The application implements several sophisticated financial calculations:
 
-``` R
+``` r
 # French amortization system with tax calculations
 pmt <- function(rate, nper, pv) -(pv * rate) / (1 - (1 + rate)^(-nper))
 
@@ -83,7 +85,7 @@ The `calc_kpis()` function computes essential metrics:
 
 **Delinquency Modeling:**
 
-``` R
+``` r
 # Apply delinquency rates to realistic cash flows
 if (mora > 0) {
   tabla_con_mora <- tabla_original %>% 
@@ -110,7 +112,7 @@ The application uses a custom Bootstrap theme with:
 
 **Dynamic Value Boxes:**
 
-``` R
+``` r
 customValueBox <- function(value, subtitle, color, icon = NULL){
   # Custom HTML components with hover effects and animations
 }
@@ -136,7 +138,7 @@ Interactive Plotly visualization showing:
 
 -   **Constant cash flow** comparison
 
-``` R
+``` r
 plot_ly(data = breakdown_long, 
         x = ~Vida_util_pct, 
         y = ~Valor_acum, 
@@ -187,7 +189,7 @@ Key use cases include:
 
 Efficient use of Shiny's reactivity:
 
-``` R
+``` r
 datos <- eventReactive(input$calcular, {
   # Complex financial calculations triggered only when needed
 })
@@ -237,14 +239,6 @@ The application provides:
 -   **Reduced errors** in complex financial modeling
 
 -   **Enhanced transparency** in portfolio evaluation processes
-
-### Technical Improvements
-
--   **API Integration**: Connect with external financial data sources
-
--   **Machine Learning**: Predictive modeling for delinquency rates
-
--   **Advanced Charts**: Time-series analysis and trend visualization
 
 ## Conclusion
 
