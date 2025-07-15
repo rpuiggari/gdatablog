@@ -1,0 +1,197 @@
+---
+title: "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis"
+author: "Ricardo Puiggari"
+date: "2024-07-15"
+categories: ["Data Science", "Survival Analysis", "Finance"]
+tags: ["Python", "lifelines", "Kaplan–Meier", "Cox Regression", "Time-Varying"]
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    theme: flatly
+---
+
+::: {.callout-note}
+**Abstract**
+
+Managing Non-Performing Loans (NPLs) requires accurate predictions of how long defaulted mortgages will remain in legal limbo. In our dataset of **4,872** foreclosure cases (2010–2020), **28%** were still active at data cutoff, reflecting "live" files that have yet to conclude.
+
+By combining classic Kaplan–Meier estimates and log-rank tests with both **Cox Proportional Hazards** and **Cox Time-Varying** models, we uncover which factors:
+
+* **Speed up** resolution (e.g., settlement agreements, specific legal stages, certain law firms)
+* **Slow down** closure (e.g., appeals, particular courts, regions)
+
+These insights are critical for:
+
+* **Valuing distressed assets** more precisely
+* **Allocating legal resources** efficiently
+* **Strategic decision-making** in loan recovery processes
+:::
+
+## 1. Introduction
+
+Understanding how long foreclosure processes take—and why they vary—is crucial for NPL management and legal resource planning. This post:
+
+1. Explores case durations via **Kaplan–Meier** curves.
+2. Tests group differences (agreement vs. full foreclosure).
+3. Fits a **CoxPH** model to identify static covariate effects.
+4. Extends to a **Cox Time‑Varying** model to capture evolving factors across proceedings.
+
+## 2. Dataset Overview
+
+* **Size:** 4,872 unique foreclosure files
+* **Censoring:** 28% of cases were still active (unresolved) at the end of the study period (censored), meaning no resolution date is recorded by Dec 2020
+* **Time span:** Jan 2010 – Dec 2020
+* **Key fields:**
+
+  * `case_id`, `start_date`, `end_date`, `time_to_event`, `event_observed`
+  * `general_type` (acuerdo vs. foreclosure vs. other)
+  * `region` (ZoneA/B/C)
+  * `judicial_court` (12 courts), `law_firm` (30 firms)
+  * `has_cassation` (appeal indicator)
+* **Preprocessing:** dropped missing events, one‑hot encoded high‑cardinality columns with frequency threshold.
+
+## 3. Model Descriptions
+
+Before diving into results, here's a quick overview of the models used:
+
+* **Kaplan–Meier Estimator**
+  Non-parametric method to estimate the survival function $S(t)$, i.e., the probability a case remains unresolved beyond time $t$. Useful for visualizing overall duration and comparing groups via log-rank tests.
+
+* **Cox Proportional Hazards (CoxPH) Model**
+  Semi-parametric regression that relates covariates to the hazard rate $h(t)$. Assumes covariate effects are constant over time (proportional hazards). Provides hazard ratios to quantify how each feature speeds up or slows down resolution.
+
+* **Cox Time‑Varying Fitter**
+  Extension of CoxPH allowing covariates to change at different time intervals (start–stop times). Captures dynamics within a case—e.g., when a new appeal is filed or the case moves to a different stage—thus modeling how evolving factors influence the instantaneous hazard.
+
+## 4. Standard Survival Analysis
+
+### 4.1 Kaplan–Meier Estimation
+
+```python
+kmf = KaplanMeierFitter()
+kmf.fit(df['time_to_event'], df['event_observed'], label='All Cases')
+kmf.plot_survival_function()
+```
+
+* **Median:** 14.2 months
+* **75%** resolution by 20 months, **90%** by 36 months
+
+### 4.2 Group Comparison (Log‑Rank Test)
+
+```python
+results = logrank_test(
+    df.query("general_type=='acuerdo'")['time_to_event'],
+    df.query("general_type=='foreclosure'")['time_to_event'],
+    event_observed_A=df.query("general_type=='acuerdo'")['event_observed'],
+    event_observed_B=df.query("general_type=='foreclosure'")['event_observed']
+)
+print(results.p_value)
+```
+
+**p < 0.001**: median **10.5 mo** (acuerdo) vs. **16.8 mo** (foreclosure)
+
+## 5. Multivariate Cox Proportional Hazards
+
+```python
+cph = CoxPHFitter()
+cph.fit(df, duration_col='time_to_event', event_col='event_observed')
+cph.check_assumptions(df)
+cph.print_summary()
+```
+
+| Covariate | HR | 95% CI | p-value |
+|-----------|----|---------|----|
+| has_cassation | 0.62 | 0.58–0.67 | <0.001 |
+| general_type_acuerdo | 1.45 | 1.35–1.56 | <0.001 |
+| region_ZoneA | 1.18 | 1.06–1.31 | 0.003 |
+| region_ZoneB | 0.88 | 0.80–0.96 | 0.008 |
+
+*Appeals slow resolution by 38%; agreements speed it by 45%; ZoneA faster, ZoneB slower.*
+
+## 6. Time‑Varying Cox Model
+
+### 6.1 Preprocessing for Time‑Varying Data
+
+* Calculated `start`/`stop` days since initial filing for each proceeding.
+* Created binary `event` per row.
+* One‑hot encoded categorical features (portfolio, stage, proceeding, resolution type, general type, zone, court, firm).
+
+#### Feature Engineering
+
+In this section, we prepare our categorical features for the Cox Time‑Varying Fitter model through one‑hot encoding. We focus on the following key features:
+
+* Portfolio Name
+* Legal Stage
+* Legal Proceeding
+* Resolution Type
+* General Type
+* Zone Group
+* Region
+* Clave
+* Judicial Court
+* Law Firm
+
+```python
+# Identify categorical features
+features = ['Portfolio Name', 'Legal Stage', 'Legal Proceeding',
+            'resolution type', 'general type', 'zone group', 'region',
+            'clave', 'Judicial Court', 'Law Firm']
+
+# Determine significant categories (>=1% frequency)
+from collections import Counter
+significant = {f: [cat for cat, freq in Counter(df_processed[f]).items() if freq/len(df_processed)>=0.01]
+               for f in features}
+
+# One-hot encode each feature
+from sklearn.preprocessing import OneHotEncoder
+encoders = {}
+for f in features:
+    enc = OneHotEncoder(categories=[significant[f]], sparse=False, handle_unknown='ignore')
+    encoders[f] = enc.fit(df_processed[[f]])
+    cols = [f"{f}_{cat}" for cat in enc.categories_[0]]
+    df_processed[cols] = enc.transform(df_processed[[f]])
+    df_processed.drop(columns=[f], inplace=True)
+    print(f"Encoded {len(cols)} categories for {f}")
+```
+
+### 6.2 Model Fitting and Diagnostics
+
+```python
+ctv = CoxTimeVaryingFitter(penalizer=0.1)
+ctv.fit(
+    ctv_data,
+    id_col='case_id', start_col='start', stop_col='stop', event_col='event'
+)
+ctv.check_assumptions(ctv_data)
+```
+
+* **Concordance:** ~0.78
+* **No major PH violations (Schoenfeld tests)**
+
+### 6.3 Key Time‑Varying Insights
+
+| Type | Covariate | HR | Effect |
+|------|-----------|----|----|
+| General Type | Other | 3.69 | +269% faster |
+|  | Acuerdo | 2.90 | +190% faster |
+| Legal Stage | Adjudicacion | 2.67 | +167% faster |
+| Resolution Type | DPO | 2.60 | +160% faster |
+| Zone | AREQUIPA | 1.71 | +71% faster |
+| Law Firm | ESTUDIO ELENA ORELLANA | 1.36 | +36% faster |
+|  | ESTUDIO VARGAS VALDIVIA | 0.75 | −25% slower |
+| Court | SEGUNDO JUZGADO CIVIL DE LORETO | 1.25 | +25% faster |
+|  | SEGUNDO JUZGADO CIVIL COMERCIAL | 0.83 | −17% slower |
+
+## 7. Discussion & Conclusion
+
+* **Static vs. dynamic** models both highlight settlement type and appeals as dominant factors.
+* Time‑varying model uncovers how each proceeding's context (stage, new appeals, firm interventions) shifts hazard rates.
+* Regional and institutional (court/firm) variations persist after adjustment.
+
+**Next steps:** competing‑risks analysis for agreement vs. foreclosure endpoints, incorporate economic covariates, and deploy a dashboard for real‑time monitoring.
+
+---
+
+

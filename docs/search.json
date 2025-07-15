@@ -18,70 +18,77 @@
     "href": "posts/carteras-iva/index.html",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
     "section": "",
-    "text": "I’ve developed an interactive R Shiny application that analyzes the performance of loan portfolios, providing comprehensive financial metrics and visualizations for investment decision-making. The tool calculates key performance indicators including ROI, IRR, payback periods, and tax implications, making it invaluable for portfolio managers and financial analysts.\nTry the live application | View source code on GitHub\nKey Features:\n\nInteractive amortization calculations with French payment system\nDual input modes: Capital amount or target tax recovery\nReal-time financial metrics including ROI, IRR, and payback analysis\nAdvanced visualizations showing component breakdown and cumulative cash flows\nTax optimization with IVA calculations and purchase tax implications\nResponsive design with modern UI/UX using Bootstrap themes"
+    "text": "Note\n\n\n\nWhat’s inside?\n\nA modular Shiny application for portfolio amortization and IVA recovery\nCustom R functions packaged for reuse\nInteractive dashboards powered by Plotly and DT\nPerformance profiling and automated testing examples"
   },
   {
-    "objectID": "posts/carteras-iva/index.html#summary",
-    "href": "posts/carteras-iva/index.html#summary",
+    "objectID": "posts/carteras-iva/index.html#introduction",
+    "href": "posts/carteras-iva/index.html#introduction",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
     "section": "",
-    "text": "I’ve developed an interactive R Shiny application that analyzes the performance of loan portfolios, providing comprehensive financial metrics and visualizations for investment decision-making. The tool calculates key performance indicators including ROI, IRR, payback periods, and tax implications, making it invaluable for portfolio managers and financial analysts.\nTry the live application | View source code on GitHub\nKey Features:\n\nInteractive amortization calculations with French payment system\nDual input modes: Capital amount or target tax recovery\nReal-time financial metrics including ROI, IRR, and payback analysis\nAdvanced visualizations showing component breakdown and cumulative cash flows\nTax optimization with IVA calculations and purchase tax implications\nResponsive design with modern UI/UX using Bootstrap themes"
+    "text": "In this post, we’ll walk through how I built a production‑ready R Shiny app for analyzing loan portfolios, factoring in Spanish IVA (VAT) recovery. You’ll see:\n\nBusiness context: Why amortization tables and IVA matter for credit investors.\nArchitecture: Modularizing UI, server logic, and finance functions.\nCode highlights: Key snippets showing advanced R techniques.\nInteractive features: Custom theming, dynamic value boxes, and Plotly-powered charts.\nBest practices: Profiling, testing, and continuous deployment.\n\nBy the end, you’ll have a template to adapt for your own finance dashboards and see how to structure Shiny apps for maintainability and performance.\nTry the live application | View source code on GitHub"
   },
   {
-    "objectID": "posts/carteras-iva/index.html#why-this-tool-matters",
-    "href": "posts/carteras-iva/index.html#why-this-tool-matters",
+    "objectID": "posts/carteras-iva/index.html#business-context-goals",
+    "href": "posts/carteras-iva/index.html#business-context-goals",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "2 Why This Tool Matters",
-    "text": "2 Why This Tool Matters\nPortfolio performance analysis is crucial for making informed investment decisions in the financial sector. This application addresses several key challenges:\n\nStandardized Analysis: Provides consistent methodology for evaluating different portfolio opportunities\nTax Optimization: Incorporates complex tax calculations (IVA) that significantly impact returns\nRisk Assessment: Includes delinquency rate modeling to assess realistic performance scenarios\nDecision Support: Delivers actionable insights through interactive visualizations"
+    "section": "2 Business Context & Goals",
+    "text": "2 Business Context & Goals\nCredit investors often buy non‑performing loan portfolios at a discount. To make informed decisions, they need to:\n\nEstimate the Present Value (PV) of future loan cash flows.\nCalculate IVA recovery on interest payments.\nModel the impact of default rates (mora) on actual returns.\n\nGoal: Build a Shiny tool that accepts portfolio parameters and outputs:\n\nAmortization schedule with IVA breakdown\nPurchase price (NPV) and key metrics (IRR, payback, duration)\nInteractive visualizations for performance analysis"
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#architecture-diagram",
+    "href": "posts/carteras-iva/index.html#architecture-diagram",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "3 Architecture Diagram",
+    "text": "3 Architecture Diagram\n::: figure\n\n:::\n\n-   **app_ui.R**: Defines inputs, layout, and custom CSS.\n\n-   **app_server.R**: Manages reactivity, calls finance functions, renders outputs.\n\n-   **finTools**: An R package containing `pmt()`, `amort_tbl()`, and `calc_kpis()` with unit tests."
   },
   {
     "objectID": "posts/carteras-iva/index.html#technical-architecture",
     "href": "posts/carteras-iva/index.html#technical-architecture",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "3 Technical Architecture",
-    "text": "3 Technical Architecture\n\n3.1 Core Financial Functions\nThe application implements several sophisticated financial calculations:\n# French amortization system with tax calculations\npmt &lt;- function(rate, nper, pv) -(pv * rate) / (1 - (1 + rate)^(-nper))\n\namort_tbl &lt;- function(capital, tasa_anual, n_cuotas, iva_rate) {\n  tasa_m &lt;- tasa_anual / 12\n  cuota  &lt;- abs(pmt(tasa_m, n_cuotas, -capital))\n  # ... detailed amortization logic\n}\n\n\n3.2 Key Performance Indicators\nThe calc_kpis() function computes essential metrics:\n\nNet Present Value (NPV): Using constant cash flows for valuation\nInternal Rate of Return (IRR): Calculated through numerical optimization\nPayback Period: Time to recover initial investment\nDuration: Weighted average time to cash flow recovery\nROI Ratios: Multiple return calculations with tax considerations\n\n\n\n3.3 Advanced Features\nDual Input Modes:\n\nCapital Mode: Start with portfolio value, calculate expected returns\nTax Recovery Mode: Reverse-engineer required capital from target tax benefits\n\nDelinquency Modeling:\n# Apply delinquency rates to realistic cash flows\nif (mora &gt; 0) {\n  tabla_con_mora &lt;- tabla_original %&gt;% \n    mutate(across(c(Pago_principal, Pago_interes, IVA, Cuota, Flujo_neto, `Cuota+IVA`), \n                  ~ .x * (1 - mora)))\n}"
+    "section": "4 Technical Architecture",
+    "text": "4 Technical Architecture\n\n4.1 Core Financial Functions\nThe application implements several sophisticated financial calculations:\n# French amortization system with tax calculations\npmt &lt;- function(rate, nper, pv) -(pv * rate) / (1 - (1 + rate)^(-nper))\n\namort_tbl &lt;- function(capital, tasa_anual, n_cuotas, iva_rate) {\n  tasa_m &lt;- tasa_anual / 12\n  cuota  &lt;- abs(pmt(tasa_m, n_cuotas, -capital))\n  # ... detailed amortization logic\n}\n\n\n4.2 Key Performance Indicators\nThe calc_kpis() function computes essential metrics:\n\nNet Present Value (NPV): Using constant cash flows for valuation\nInternal Rate of Return (IRR): Calculated through numerical optimization\nPayback Period: Time to recover initial investment\nDuration: Weighted average time to cash flow recovery\nROI Ratios: Multiple return calculations with tax considerations\n\n\n\n4.3 Advanced Features\nDual Input Modes:\n\nCapital Mode: Start with portfolio value, calculate expected returns\nTax Recovery Mode: Reverse-engineer required capital from target tax benefits\n\nDelinquency Modeling:\n# Apply delinquency rates to realistic cash flows\nif (mora &gt; 0) {\n  tabla_con_mora &lt;- tabla_original %&gt;% \n    mutate(across(c(Pago_principal, Pago_interes, IVA, Cuota, Flujo_neto, `Cuota+IVA`), \n                  ~ .x * (1 - mora)))\n}"
   },
   {
     "objectID": "posts/carteras-iva/index.html#user-interface-design",
     "href": "posts/carteras-iva/index.html#user-interface-design",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "4 User Interface Design",
-    "text": "4 User Interface Design\n\n4.1 Modern Bootstrap Theme\nThe application uses a custom Bootstrap theme with:\n\nGradient buttons and hover effects\nCard-based layouts for better content organization\nFont Awesome icons for visual enhancement\nResponsive grid system for mobile compatibility\n\n\n\n4.2 Interactive Components\nDynamic Value Boxes:\ncustomValueBox &lt;- function(value, subtitle, color, icon = NULL){\n  # Custom HTML components with hover effects and animations\n}\nTabbed Interface:\n\nSummary Tab: Key metrics and amortization table\nAdvanced Analysis Tab: Detailed charts and extended KPIs"
+    "section": "5 User Interface Design",
+    "text": "5 User Interface Design\n\n5.1 Modern Bootstrap Theme\nThe application uses a custom Bootstrap theme with:\n\nGradient buttons and hover effects\nCard-based layouts for better content organization\nFont Awesome icons for visual enhancement\nResponsive grid system for mobile compatibility\n\n\n\n5.2 Interactive Components\nDynamic Value Boxes:\ncustomValueBox &lt;- function(value, subtitle, color, icon = NULL){\n  # Custom HTML components with hover effects and animations\n}\nTabbed Interface:\n\nSummary Tab: Key metrics and amortization table\nAdvanced Analysis Tab: Detailed charts and extended KPIs"
   },
   {
     "objectID": "posts/carteras-iva/index.html#data-visualization",
     "href": "posts/carteras-iva/index.html#data-visualization",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "5 Data Visualization",
-    "text": "5 Data Visualization\n\n5.1 Component Breakdown Chart\nInteractive Plotly visualization showing:\n\nCapital recovery over time\nInterest accumulation patterns\nTax implications (IVA) timeline\nConstant cash flow comparison\n\nplot_ly(data = breakdown_long, \n        x = ~Vida_util_pct, \n        y = ~Valor_acum, \n        color = ~Componente,\n        type = 'scatter', \n        mode = 'lines+markers')\n\n\n5.2 Cumulative Cash Flow Analysis\nShows portfolio performance against purchase price with:\n\nPayback period visualization\nBreak-even analysis\nPerformance trajectory over portfolio life"
+    "section": "6 Data Visualization",
+    "text": "6 Data Visualization\n\n6.1 Component Breakdown Chart\nInteractive Plotly visualization showing:\n\nCapital recovery over time\nInterest accumulation patterns\nTax implications (IVA) timeline\nConstant cash flow comparison\n\nplot_ly(data = breakdown_long, \n        x = ~Vida_util_pct, \n        y = ~Valor_acum, \n        color = ~Componente,\n        type = 'scatter', \n        mode = 'lines+markers')\n\n\n6.2 Cumulative Cash Flow Analysis\nShows portfolio performance against purchase price with:\n\nPayback period visualization\nBreak-even analysis\nPerformance trajectory over portfolio life"
   },
   {
     "objectID": "posts/carteras-iva/index.html#real-world-applications",
     "href": "posts/carteras-iva/index.html#real-world-applications",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "6 Real-World Applications",
-    "text": "6 Real-World Applications\n\n6.1 Investment Decision Support\nThe tool helps analysts:\n\nCompare portfolio opportunities with standardized metrics\nOptimize tax strategies through IVA calculations\nModel different scenarios with varying delinquency rates\nAssess risk-return profiles across different time horizons\n\n\n\n6.2 Portfolio Management\nKey use cases include:\n\nDue diligence on new acquisitions\nPerformance monitoring of existing portfolios\nStrategic planning for portfolio optimization\nClient reporting with professional visualizations"
+    "section": "7 Real-World Applications",
+    "text": "7 Real-World Applications\n\n7.1 Investment Decision Support\nThe tool helps analysts:\n\nCompare portfolio opportunities with standardized metrics\nOptimize tax strategies through IVA calculations\nModel different scenarios with varying delinquency rates\nAssess risk-return profiles across different time horizons\n\n\n\n7.2 Portfolio Management\nKey use cases include:\n\nDue diligence on new acquisitions\nPerformance monitoring of existing portfolios\nStrategic planning for portfolio optimization\nClient reporting with professional visualizations"
   },
   {
     "objectID": "posts/carteras-iva/index.html#technical-implementation-highlights",
     "href": "posts/carteras-iva/index.html#technical-implementation-highlights",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "7 Technical Implementation Highlights",
-    "text": "7 Technical Implementation Highlights\n\n7.1 Reactive Programming\nEfficient use of Shiny’s reactivity:\ndatos &lt;- eventReactive(input$calcular, {\n  # Complex financial calculations triggered only when needed\n})\n\n\n7.2 Performance Optimization\n\nConditional panels for dynamic UI updates\nEfficient data processing with dplyr pipelines\nOptimized rendering for large datasets\n\n\n\n7.3 Error Handling\nRobust numerical methods:\nirr &lt;- tryCatch(uniroot(irr_fun, c(0, 2))$root, \n                error = function(e) NA)"
+    "section": "8 Technical Implementation Highlights",
+    "text": "8 Technical Implementation Highlights\n\n8.1 Reactive Programming\nEfficient use of Shiny’s reactivity:\ndatos &lt;- eventReactive(input$calcular, {\n  # Complex financial calculations triggered only when needed\n})\n\n\n8.2 Performance Optimization\n\nConditional panels for dynamic UI updates\nEfficient data processing with dplyr pipelines\nOptimized rendering for large datasets\n\n\n\n8.3 Error Handling\nRobust numerical methods:\nirr &lt;- tryCatch(uniroot(irr_fun, c(0, 2))$root, \n                error = function(e) NA)"
   },
   {
     "objectID": "posts/carteras-iva/index.html#results-and-impact",
     "href": "posts/carteras-iva/index.html#results-and-impact",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "8 Results and Impact",
-    "text": "8 Results and Impact\n\n8.1 Financial Accuracy\nThe application provides:\n\nPrecise NPV calculations using industry-standard methods\nAccurate tax modeling incorporating complex IVA regulations\nRealistic performance projections with delinquency adjustments\n\n\n\n8.2 User Experience\n\nIntuitive interface requiring minimal financial expertise\nInteractive visualizations for better insight discovery\nProfessional reporting suitable for stakeholder presentations\n\n\n\n8.3 Business Value\n\nFaster decision-making through automated calculations\nReduced errors in complex financial modeling\nEnhanced transparency in portfolio evaluation processes"
+    "section": "9 Results and Impact",
+    "text": "9 Results and Impact\n\n9.1 Financial Accuracy\nThe application provides:\n\nPrecise NPV calculations using industry-standard methods\nAccurate tax modeling incorporating complex IVA regulations\nRealistic performance projections with delinquency adjustments\n\n\n\n9.2 User Experience\n\nIntuitive interface requiring minimal financial expertise\nInteractive visualizations for better insight discovery\nProfessional reporting suitable for stakeholder presentations\n\n\n\n9.3 Business Value\n\nFaster decision-making through automated calculations\nReduced errors in complex financial modeling\nEnhanced transparency in portfolio evaluation processes"
   },
   {
     "objectID": "posts/carteras-iva/index.html#conclusion",
     "href": "posts/carteras-iva/index.html#conclusion",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
-    "section": "9 Conclusion",
-    "text": "9 Conclusion\nThis R Shiny application demonstrates how interactive web applications can transform complex financial analysis into accessible, actionable insights. By combining sophisticated financial modeling with modern web technologies, it provides a powerful tool for portfolio analysis that bridges the gap between technical complexity and business usability.\nThe application showcases several key technical achievements:\n\nRobust financial calculations with proper error handling\nModern UI/UX design using Bootstrap and custom CSS\nInteractive visualizations with Plotly integration\nFlexible input modes for different analysis scenarios\n\nFor financial professionals, this tool represents a significant improvement in analytical capability, enabling faster, more accurate, and more comprehensive portfolio evaluation processes.\n\nThe complete source code for this application is available, demonstrating practical implementation of financial modeling in R Shiny with production-ready features and professional presentation."
+    "section": "10 Conclusion",
+    "text": "10 Conclusion\nThis R Shiny application demonstrates how interactive web applications can transform complex financial analysis into accessible, actionable insights. By combining sophisticated financial modeling with modern web technologies, it provides a powerful tool for portfolio analysis that bridges the gap between technical complexity and business usability.\nThe application showcases several key technical achievements:\n\nRobust financial calculations with proper error handling\nModern UI/UX design using Bootstrap and custom CSS\nInteractive visualizations with Plotly integration\nFlexible input modes for different analysis scenarios\n\nFor financial professionals, this tool represents a significant improvement in analytical capability, enabling faster, more accurate, and more comprehensive portfolio evaluation processes.\n\nThe complete source code for this application is available, demonstrating practical implementation of financial modeling in R Shiny with production-ready features and professional presentation."
   },
   {
     "objectID": "posts/My-new-post/index.html",
@@ -158,6 +165,97 @@
     "href": "index.html",
     "title": "Recent posts",
     "section": "",
-    "text": "Building a Financial Portfolio Analysis Tool with R Shiny\n\n\n\n\n\n\nshiny\n\n\nfinance\n\n\nportfolio-analysis\n\n\ninteractive-dashboard\n\n\n\n\n\n\n\n\n\nDec 15, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nImproving Foreclosure Timeline Predictions(Simple Explanation)\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating Predictive Model Accuracy in Foreclosure Cases\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\nNo matching items"
+    "text": "Building a Financial Portfolio Analysis Tool with R Shiny\n\n\n\n\n\n\nShiny\n\n\nFinance\n\n\nR\n\n\n\n\n\n\n\n\n\nDec 15, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nImproving Foreclosure Timeline Predictions(Simple Explanation)\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating Predictive Model Accuracy in Foreclosure Cases\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nPredicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis\n\n\n\n\n\n\nData Science\n\n\nSurvival Analysis\n\n\nFinance\n\n\n\n\n\n\n\n\n\nJul 15, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#core-finance-functions",
+    "href": "posts/carteras-iva/index.html#core-finance-functions",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "4.1 Core Finance Functions",
+    "text": "4.1 Core Finance Functions\n# amort_tbl(): builds the amortization data frame\ndeck &lt;- amort_tbl(capital = 1000, tasa_anual = 0.12,\n                   n_cuotas = 12, iva_rate = 0.21)\nstr(deck)\nExplain: uses the French amortization method, loops per period, calculates IVA on interest, and returns a tidy table."
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#custom-value-boxes",
+    "href": "posts/carteras-iva/index.html#custom-value-boxes",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "4.2 Custom Value Boxes",
+    "text": "4.2 Custom Value Boxes\ncustomValueBox &lt;- function(value, subtitle, color, icon = NULL) {\n  # Builds a Bootstrap card with icon, gradient header, and hover effect\n  htmltools::div(...)\n}\n\nPro Tip: Abstracting value boxes into a function makes it trivial to add new KPIs with consistent styling."
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#interactive-charts",
+    "href": "posts/carteras-iva/index.html#interactive-charts",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "4.3 Interactive Charts",
+    "text": "4.3 Interactive Charts\noutput$plot_acum &lt;- renderPlotly({\n  df &lt;- data.frame(Periodo = tabla$Periodo, Acumulado = acum)\n  p &lt;- ggplot(df, aes(Periodo, Acumulado)) +\n       geom_line(size = 1.5) +\n       geom_hline(yintercept = pv, linetype = \"dashed\") +\n       labs(...)\n  ggplotly(p, tooltip = c(\"x\", \"y\"))\n})\nHighlights:\n\nSynchronize hover across multiple charts\nOverlay benchmarks (e.g., purchase price)\nEnable zoom and tooltips for deeper insights"
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#profiling",
+    "href": "posts/carteras-iva/index.html#profiling",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "6.1 Profiling",
+    "text": "6.1 Profiling\nprofvis({\n  datos()  # the eventReactive computation block\n})\nIdentify bottlenecks (e.g., repetitive amort_tbl() calls) and cache results using memoise::memoise()."
+  },
+  {
+    "objectID": "posts/carteras-iva/index.html#automated-tests",
+    "href": "posts/carteras-iva/index.html#automated-tests",
+    "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
+    "section": "6.2 Automated Tests",
+    "text": "6.2 Automated Tests\nlibrary(testthat)\ntest_that(\"PV calculation matches Excel\", {\n  f &lt;- rep(100, 12)\n  expect_equal(a_npv(f, r = 0.01), 100 * (1 - (1 + 0.01)^(-12)) / 0.01)\n})\n\nWhy: Ensures that future changes don’t break critical financial logic."
+  },
+  {
+    "objectID": "posts/survival/index.html",
+    "href": "posts/survival/index.html",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "",
+    "text": "Note\n\n\n\nAbstract\nManaging Non-Performing Loans (NPLs) requires accurate predictions of how long defaulted mortgages will remain in legal limbo. In our dataset of 4,872 foreclosure cases (2010–2020), 28% were still active at data cutoff, reflecting “live” files that have yet to conclude.\nBy combining classic Kaplan–Meier estimates and log-rank tests with both Cox Proportional Hazards and Cox Time-Varying models, we uncover which factors:\n\nSpeed up resolution (e.g., settlement agreements, specific legal stages, certain law firms)\nSlow down closure (e.g., appeals, particular courts, regions)\n\nThese insights are critical for:\n\nValuing distressed assets more precisely\nAllocating legal resources efficiently\nStrategic decision-making in loan recovery processes"
+  },
+  {
+    "objectID": "posts/survival/index.html#introduction",
+    "href": "posts/survival/index.html#introduction",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "1. Introduction",
+    "text": "1. Introduction\nUnderstanding how long foreclosure processes take—and why they vary—is crucial for NPL management and legal resource planning. This post:\n\nExplores case durations via Kaplan–Meier curves.\nTests group differences (agreement vs. full foreclosure).\nFits a CoxPH model to identify static covariate effects.\nExtends to a Cox Time‑Varying model to capture evolving factors across proceedings."
+  },
+  {
+    "objectID": "posts/survival/index.html#dataset-overview",
+    "href": "posts/survival/index.html#dataset-overview",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "2. Dataset Overview",
+    "text": "2. Dataset Overview\n\nSize: 4,872 unique foreclosure files\nCensoring: 28% of cases were still active (unresolved) at the end of the study period (censored), meaning no resolution date is recorded by Dec 2020\nTime span: Jan 2010 – Dec 2020\nKey fields:\n\ncase_id, start_date, end_date, time_to_event, event_observed\ngeneral_type (acuerdo vs. foreclosure vs. other)\nregion (ZoneA/B/C)\njudicial_court (12 courts), law_firm (30 firms)\nhas_cassation (appeal indicator)\n\nPreprocessing: dropped missing events, one‑hot encoded high‑cardinality columns with frequency threshold."
+  },
+  {
+    "objectID": "posts/survival/index.html#model-descriptions",
+    "href": "posts/survival/index.html#model-descriptions",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "3. Model Descriptions",
+    "text": "3. Model Descriptions\nBefore diving into results, here’s a quick overview of the models used:\n\nKaplan–Meier Estimator Non-parametric method to estimate the survival function \\(S(t)\\), i.e., the probability a case remains unresolved beyond time \\(t\\). Useful for visualizing overall duration and comparing groups via log-rank tests.\nCox Proportional Hazards (CoxPH) Model Semi-parametric regression that relates covariates to the hazard rate \\(h(t)\\). Assumes covariate effects are constant over time (proportional hazards). Provides hazard ratios to quantify how each feature speeds up or slows down resolution.\nCox Time‑Varying Fitter Extension of CoxPH allowing covariates to change at different time intervals (start–stop times). Captures dynamics within a case—e.g., when a new appeal is filed or the case moves to a different stage—thus modeling how evolving factors influence the instantaneous hazard."
+  },
+  {
+    "objectID": "posts/survival/index.html#standard-survival-analysis",
+    "href": "posts/survival/index.html#standard-survival-analysis",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "4. Standard Survival Analysis",
+    "text": "4. Standard Survival Analysis\n\n4.1 Kaplan–Meier Estimation\nkmf = KaplanMeierFitter()\nkmf.fit(df['time_to_event'], df['event_observed'], label='All Cases')\nkmf.plot_survival_function()\n\nMedian: 14.2 months\n75% resolution by 20 months, 90% by 36 months\n\n\n\n4.2 Group Comparison (Log‑Rank Test)\nresults = logrank_test(\n    df.query(\"general_type=='acuerdo'\")['time_to_event'],\n    df.query(\"general_type=='foreclosure'\")['time_to_event'],\n    event_observed_A=df.query(\"general_type=='acuerdo'\")['event_observed'],\n    event_observed_B=df.query(\"general_type=='foreclosure'\")['event_observed']\n)\nprint(results.p_value)\np &lt; 0.001: median 10.5 mo (acuerdo) vs. 16.8 mo (foreclosure)"
+  },
+  {
+    "objectID": "posts/survival/index.html#multivariate-cox-proportional-hazards",
+    "href": "posts/survival/index.html#multivariate-cox-proportional-hazards",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "5. Multivariate Cox Proportional Hazards",
+    "text": "5. Multivariate Cox Proportional Hazards\ncph = CoxPHFitter()\ncph.fit(df, duration_col='time_to_event', event_col='event_observed')\ncph.check_assumptions(df)\ncph.print_summary()\n\n\n\nCovariate\nHR\n95% CI\np-value\n\n\n\n\nhas_cassation\n0.62\n0.58–0.67\n&lt;0.001\n\n\ngeneral_type_acuerdo\n1.45\n1.35–1.56\n&lt;0.001\n\n\nregion_ZoneA\n1.18\n1.06–1.31\n0.003\n\n\nregion_ZoneB\n0.88\n0.80–0.96\n0.008\n\n\n\nAppeals slow resolution by 38%; agreements speed it by 45%; ZoneA faster, ZoneB slower."
+  },
+  {
+    "objectID": "posts/survival/index.html#timevarying-cox-model",
+    "href": "posts/survival/index.html#timevarying-cox-model",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "6. Time‑Varying Cox Model",
+    "text": "6. Time‑Varying Cox Model\n\n6.1 Preprocessing for Time‑Varying Data\n\nCalculated start/stop days since initial filing for each proceeding.\nCreated binary event per row.\nOne‑hot encoded categorical features (portfolio, stage, proceeding, resolution type, general type, zone, court, firm).\n\n\nFeature Engineering\nIn this section, we prepare our categorical features for the Cox Time‑Varying Fitter model through one‑hot encoding. We focus on the following key features:\n\nPortfolio Name\nLegal Stage\nLegal Proceeding\nResolution Type\nGeneral Type\nZone Group\nRegion\nClave\nJudicial Court\nLaw Firm\n\n# Identify categorical features\nfeatures = ['Portfolio Name', 'Legal Stage', 'Legal Proceeding',\n            'resolution type', 'general type', 'zone group', 'region',\n            'clave', 'Judicial Court', 'Law Firm']\n\n# Determine significant categories (&gt;=1% frequency)\nfrom collections import Counter\nsignificant = {f: [cat for cat, freq in Counter(df_processed[f]).items() if freq/len(df_processed)&gt;=0.01]\n               for f in features}\n\n# One-hot encode each feature\nfrom sklearn.preprocessing import OneHotEncoder\nencoders = {}\nfor f in features:\n    enc = OneHotEncoder(categories=[significant[f]], sparse=False, handle_unknown='ignore')\n    encoders[f] = enc.fit(df_processed[[f]])\n    cols = [f\"{f}_{cat}\" for cat in enc.categories_[0]]\n    df_processed[cols] = enc.transform(df_processed[[f]])\n    df_processed.drop(columns=[f], inplace=True)\n    print(f\"Encoded {len(cols)} categories for {f}\")\n\n\n\n6.2 Model Fitting and Diagnostics\nctv = CoxTimeVaryingFitter(penalizer=0.1)\nctv.fit(\n    ctv_data,\n    id_col='case_id', start_col='start', stop_col='stop', event_col='event'\n)\nctv.check_assumptions(ctv_data)\n\nConcordance: ~0.78\nNo major PH violations (Schoenfeld tests)\n\n\n\n6.3 Key Time‑Varying Insights\n\n\n\nType\nCovariate\nHR\nEffect\n\n\n\n\nGeneral Type\nOther\n3.69\n+269% faster\n\n\n\nAcuerdo\n2.90\n+190% faster\n\n\nLegal Stage\nAdjudicacion\n2.67\n+167% faster\n\n\nResolution Type\nDPO\n2.60\n+160% faster\n\n\nZone\nAREQUIPA\n1.71\n+71% faster\n\n\nLaw Firm\nESTUDIO ELENA ORELLANA\n1.36\n+36% faster\n\n\n\nESTUDIO VARGAS VALDIVIA\n0.75\n−25% slower\n\n\nCourt\nSEGUNDO JUZGADO CIVIL DE LORETO\n1.25\n+25% faster\n\n\n\nSEGUNDO JUZGADO CIVIL COMERCIAL\n0.83\n−17% slower"
+  },
+  {
+    "objectID": "posts/survival/index.html#discussion-conclusion",
+    "href": "posts/survival/index.html#discussion-conclusion",
+    "title": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis",
+    "section": "7. Discussion & Conclusion",
+    "text": "7. Discussion & Conclusion\n\nStatic vs. dynamic models both highlight settlement type and appeals as dominant factors.\nTime‑varying model uncovers how each proceeding’s context (stage, new appeals, firm interventions) shifts hazard rates.\nRegional and institutional (court/firm) variations persist after adjustment.\n\nNext steps: competing‑risks analysis for agreement vs. foreclosure endpoints, incorporate economic covariates, and deploy a dashboard for real‑time monitoring."
   }
 ]

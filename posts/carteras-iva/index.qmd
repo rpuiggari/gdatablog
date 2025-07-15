@@ -1,261 +1,185 @@
 ---
 title: "Building a Financial Portfolio Analysis Tool with R Shiny"
-author: "Piru Puiggari"
-date: "2024-12-15"
-categories: [shiny, finance, portfolio-analysis, interactive-dashboard]
-#image: "portfolio_dashboard.jpg"
+author: "Ricardo Puiggari"
+date: 2024-12-15
+categories: ["Shiny", "Finance", "R"]
+tags: ["shiny", "finance", "portfolio-analysis", "interactive-dashboard"]
 format:
   html:
     toc: true
-    toc-location: right
     toc-depth: 3
-    number-sections: true
+    code-fold: true
+    theme: flatly
 ---
 
-## Summary
+::: {.callout-note}
+**What's inside?**
 
-I've developed an interactive R Shiny application that analyzes the performance of loan portfolios, providing comprehensive financial metrics and visualizations for investment decision-making. The tool calculates key performance indicators including ROI, IRR, payback periods, and tax implications, making it invaluable for portfolio managers and financial analysts.
+* A modular Shiny application for portfolio amortization and IVA recovery
+* Custom R functions packaged for reuse
+* Interactive dashboards powered by Plotly and DT
+* Performance profiling and automated testing examples
+:::
 
-[**Try the live application**](https://rpuiggari.shinyapps.io/carteras_iva/) \| [**View source code on GitHub**](https://github.com/rpuiggari/carteras)
+# Introduction
 
-**Key Features:**
+In this post, we’ll walk through how I built a production‑ready R Shiny app for analyzing loan portfolios, factoring in Spanish IVA (VAT) recovery. You’ll see:
 
--   **Interactive amortization calculations** with French payment system
+1. **Business context**: Why amortization tables and IVA matter for credit investors.
+2. **Architecture**: Modularizing UI, server logic, and finance functions.
+3. **Code highlights**: Key snippets showing advanced R techniques.
+4. **Interactive features**: Custom theming, dynamic value boxes, and Plotly-powered charts.
+5. **Best practices**: Profiling, testing, and continuous deployment.
 
--   **Dual input modes**: Capital amount or target tax recovery
+By the end, you’ll have a template to adapt for your own finance dashboards and see how to structure Shiny apps for maintainability and performance.
 
--   **Real-time financial metrics** including ROI, IRR, and payback analysis
+---
 
--   **Advanced visualizations** showing component breakdown and cumulative cash flows
+# 1. Business Context & Goals
 
--   **Tax optimization** with IVA calculations and purchase tax implications
+Credit investors often buy non‑performing loan portfolios at a discount. To make informed decisions, they need to:
 
--   **Responsive design** with modern UI/UX using Bootstrap themes
+* Estimate the **Present Value (PV)** of future loan cash flows.
+* Calculate **IVA recovery** on interest payments.
+* Model the impact of **default rates (mora)** on actual returns.
 
-## Why This Tool Matters
+**Goal**: Build a Shiny tool that accepts portfolio parameters and outputs:
 
-Portfolio performance analysis is crucial for making informed investment decisions in the financial sector. This application addresses several key challenges:
+* Amortization schedule with IVA breakdown
+* Purchase price (NPV) and key metrics (IRR, payback, duration)
+* Interactive visualizations for performance analysis
 
-1.  **Standardized Analysis**: Provides consistent methodology for evaluating different portfolio opportunities
+---
 
-2.  **Tax Optimization**: Incorporates complex tax calculations (IVA) that significantly impact returns
+# 2. Architecture Diagram
 
-3.  **Risk Assessment**: Includes delinquency rate modeling to assess realistic performance scenarios
+\::: figure <img src="architecture.png" alt="App architecture: UI ↔ server ↔ finance-core" width="600"/>
+\:::
 
-4.  **Decision Support**: Delivers actionable insights through interactive visualizations
+* **app\_ui.R**: Defines inputs, layout, and custom CSS.
+* **app\_server.R**: Manages reactivity, calls finance functions, renders outputs.
+* **finTools**: An R package containing `pmt()`, `amort_tbl()`, and `calc_kpis()` with unit tests.
 
-## Technical Architecture
+---
 
-### Core Financial Functions
+# 3. Live App & Source Code
 
-The application implements several sophisticated financial calculations:
+Check out the deployment and source code for the app:
 
-``` r
-# French amortization system with tax calculations
-pmt <- function(rate, nper, pv) -(pv * rate) / (1 - (1 + rate)^(-nper))
+* **Live app:** [https://rpuiggari.shinyapps.io/carteras\_iva/](https://rpuiggari.shinyapps.io/carteras_iva/)
+* **Source code:** [https://github.com/rpuiggari/carteras](https://github.com/rpuiggari/carteras)
 
-amort_tbl <- function(capital, tasa_anual, n_cuotas, iva_rate) {
-  tasa_m <- tasa_anual / 12
-  cuota  <- abs(pmt(tasa_m, n_cuotas, -capital))
-  # ... detailed amortization logic
+---
+
+# 4. Code Walkthrough
+
+## 4.1 Core Finance Functions
+
+```r
+# amort_tbl(): builds the amortization data frame
+deck <- amort_tbl(capital = 1000, tasa_anual = 0.12,
+                   n_cuotas = 12, iva_rate = 0.21)
+str(deck)
+```
+
+Explain: uses the French amortization method, loops per period, calculates IVA on interest, and returns a tidy table.
+
+## 4.2 Custom Value Boxes
+
+```r
+customValueBox <- function(value, subtitle, color, icon = NULL) {
+  # Builds a Bootstrap card with icon, gradient header, and hover effect
+  htmltools::div(...)
 }
 ```
 
-### Key Performance Indicators
+> **Pro Tip**: Abstracting value boxes into a function makes it trivial to add new KPIs with consistent styling.
 
-The `calc_kpis()` function computes essential metrics:
+## 4.3 Interactive Charts
 
--   **Net Present Value (NPV)**: Using constant cash flows for valuation
-
--   **Internal Rate of Return (IRR)**: Calculated through numerical optimization
-
--   **Payback Period**: Time to recover initial investment
-
--   **Duration**: Weighted average time to cash flow recovery
-
--   **ROI Ratios**: Multiple return calculations with tax considerations
-
-### Advanced Features
-
-**Dual Input Modes:**
-
--   **Capital Mode**: Start with portfolio value, calculate expected returns
-
--   **Tax Recovery Mode**: Reverse-engineer required capital from target tax benefits
-
-**Delinquency Modeling:**
-
-``` r
-# Apply delinquency rates to realistic cash flows
-if (mora > 0) {
-  tabla_con_mora <- tabla_original %>% 
-    mutate(across(c(Pago_principal, Pago_interes, IVA, Cuota, Flujo_neto, `Cuota+IVA`), 
-                  ~ .x * (1 - mora)))
-}
-```
-
-## User Interface Design
-
-### Modern Bootstrap Theme
-
-The application uses a custom Bootstrap theme with:
-
--   **Gradient buttons** and hover effects
-
--   **Card-based layouts** for better content organization
-
--   **Font Awesome icons** for visual enhancement
-
--   **Responsive grid system** for mobile compatibility
-
-### Interactive Components
-
-**Dynamic Value Boxes:**
-
-``` r
-customValueBox <- function(value, subtitle, color, icon = NULL){
-  # Custom HTML components with hover effects and animations
-}
-```
-
-**Tabbed Interface:**
-
--   **Summary Tab**: Key metrics and amortization table
-
--   **Advanced Analysis Tab**: Detailed charts and extended KPIs
-
-## Data Visualization
-
-### Component Breakdown Chart
-
-Interactive Plotly visualization showing:
-
--   **Capital recovery** over time
-
--   **Interest accumulation** patterns
-
--   **Tax implications** (IVA) timeline
-
--   **Constant cash flow** comparison
-
-``` r
-plot_ly(data = breakdown_long, 
-        x = ~Vida_util_pct, 
-        y = ~Valor_acum, 
-        color = ~Componente,
-        type = 'scatter', 
-        mode = 'lines+markers')
-```
-
-### Cumulative Cash Flow Analysis
-
-Shows portfolio performance against purchase price with:
-
--   **Payback period** visualization
-
--   **Break-even analysis**
-
--   **Performance trajectory** over portfolio life
-
-## Real-World Applications
-
-### Investment Decision Support
-
-The tool helps analysts:
-
-1.  **Compare portfolio opportunities** with standardized metrics
-
-2.  **Optimize tax strategies** through IVA calculations
-
-3.  **Model different scenarios** with varying delinquency rates
-
-4.  **Assess risk-return profiles** across different time horizons
-
-### Portfolio Management
-
-Key use cases include:
-
--   **Due diligence** on new acquisitions
-
--   **Performance monitoring** of existing portfolios
-
--   **Strategic planning** for portfolio optimization
-
--   **Client reporting** with professional visualizations
-
-## Technical Implementation Highlights
-
-### Reactive Programming
-
-Efficient use of Shiny's reactivity:
-
-``` r
-datos <- eventReactive(input$calcular, {
-  # Complex financial calculations triggered only when needed
+```r
+output$plot_acum <- renderPlotly({
+  df <- data.frame(Periodo = tabla$Periodo, Acumulado = acum)
+  p <- ggplot(df, aes(Periodo, Acumulado)) +
+       geom_line(size = 1.5) +
+       geom_hline(yintercept = pv, linetype = "dashed") +
+       labs(...)
+  ggplotly(p, tooltip = c("x", "y"))
 })
 ```
 
-### Performance Optimization
+Highlights:
 
--   **Conditional panels** for dynamic UI updates
+* Synchronize hover across multiple charts
+* Overlay benchmarks (e.g., purchase price)
+* Enable zoom and tooltips for deeper insights
 
--   **Efficient data processing** with dplyr pipelines
+---
 
--   **Optimized rendering** for large datasets
+# 5. UI/UX Enhancements
 
-### Error Handling
+* **bslib theme**: Leveraged `bootswatch = "flatly"` and customized brand colors via `bs_theme()`.
+* **Form validation**: With **shinyvalidate**, we ensure rates stay between 0–100%:
 
-Robust numerical methods:
-
-```         
-irr <- tryCatch(uniroot(irr_fun, c(0, 2))$root, 
-                error = function(e) NA)
+```r
+validator <- InputValidator$new()
+validator$add_rule("tasa_anual", sv_between(0, 300))
+validator$enable()
 ```
 
-## Results and Impact
+* **Improved inputs**: Use `shinyWidgets::sliderTextInput()` for rate sliders with presets.
 
-### Financial Accuracy
+---
 
-The application provides:
+# 6. Performance & Testing
 
--   **Precise NPV calculations** using industry-standard methods
+## 6.1 Profiling
 
--   **Accurate tax modeling** incorporating complex IVA regulations
+```r
+profvis({
+  datos()  # the eventReactive computation block
+})
+```
 
--   **Realistic performance projections** with delinquency adjustments
+Identify bottlenecks (e.g., repetitive `amort_tbl()` calls) and cache results using `memoise::memoise()`.
 
-### User Experience
+## 6.2 Automated Tests
 
--   **Intuitive interface** requiring minimal financial expertise
+```r
+library(testthat)
+test_that("PV calculation matches Excel", {
+  f <- rep(100, 12)
+  expect_equal(a_npv(f, r = 0.01), 100 * (1 - (1 + 0.01)^(-12)) / 0.01)
+})
+```
 
--   **Interactive visualizations** for better insight discovery
+> **Why**: Ensures that future changes don’t break critical financial logic.
 
--   **Professional reporting** suitable for stakeholder presentations
+---
 
-### Business Value
+# 7. Deployment & CI/CD
 
--   **Faster decision-making** through automated calculations
+* **GitHub Actions**: Lint R code, run tests, and deploy to [shinyapps.io](https://shinyapps.io).
+* **Quarto Integration**: Use Quarto’s `execute: true` to embed live outputs and reproducible reports.
 
--   **Reduced errors** in complex financial modeling
+```yaml
+execute:
+  freeze: auto
+  cache: yes
+```
 
--   **Enhanced transparency** in portfolio evaluation processes
+---
 
-## Conclusion
+# 8. Next Steps
 
-This R Shiny application demonstrates how interactive web applications can transform complex financial analysis into accessible, actionable insights. By combining sophisticated financial modeling with modern web technologies, it provides a powerful tool for portfolio analysis that bridges the gap between technical complexity and business usability.
+* **Scenario comparison**: Allow side-by-side dashboards for multiple portfolios.
+* **PDF & Excel exports**: Add `downloadHandler()` for custom reports.
+* **Authentication**: Integrate **pin** or **shinyauthr** for user-level access.
 
-The application showcases several key technical achievements:
+---
 
--   **Robust financial calculations** with proper error handling
+# Conclusion
 
--   **Modern UI/UX design** using Bootstrap and custom CSS
+This Shiny app demonstrates how to combine robust financial calculations, polished UI, and best practices in testing and deployment. Feel free to explore the [source code on GitHub](https://github.com/rpuiggari/gdatablog) and adapt the patterns for your own projects!
 
--   **Interactive visualizations** with Plotly integration
-
--   **Flexible input modes** for different analysis scenarios
-
-For financial professionals, this tool represents a significant improvement in analytical capability, enabling faster, more accurate, and more comprehensive portfolio evaluation processes.
-
-------------------------------------------------------------------------
-
-*The complete source code for this application is available, demonstrating practical implementation of financial modeling in R Shiny with production-ready features and professional presentation.*
+Happy coding! 🧮🚀
