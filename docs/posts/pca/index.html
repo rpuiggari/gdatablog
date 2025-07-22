@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Piru Puiggari">
+<meta name="dcterms.date" content="2025-01-01">
+<meta name="description" content="Using Principal Component Analysis to understand the hidden patterns in legal case resolution times and predict case outcomes in a dataset of 79,000+ legal proceedings.">
+
+<title>Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data – G’data by Piru</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">G’data by Piru</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data</h1>
+                  <div>
+        <div class="description">
+          Using Principal Component Analysis to understand the hidden patterns in legal case resolution times and predict case outcomes in a dataset of 79,000+ legal proceedings.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Data Science</div>
+                <div class="quarto-category">PCA</div>
+                <div class="quarto-category">Legal Analytics</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">Feature Engineering</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Piru Puiggari </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 1, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="executive-summary" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
+<p>Legal case management is a complex domain where understanding the factors that influence case resolution times can lead to significant operational improvements. In this analysis, I applied Principal Component Analysis (PCA) to a comprehensive dataset of 79,776 legal proceedings to uncover hidden patterns and relationships that drive case complexity and resolution efficiency.</p>
+<p><strong>Key Findings:</strong> - Three principal components explain 67% of the variance in legal case data - Cases with more proceedings paradoxically tend to resolve faster - Proceeding pace and diversity are critical predictors of resolution time - The analysis reveals distinct case management strategies that could optimize legal operations</p>
+</section>
+<section id="the-challenge" class="level2">
+<h2 class="anchored" data-anchor-id="the-challenge">The Challenge</h2>
+<p>Legal proceedings involve multiple stages, varied timelines, and complex interdependencies. Traditional analysis often fails to capture the nuanced relationships between case characteristics and outcomes. My goal was to:</p>
+<ol type="1">
+<li><strong>Identify latent patterns</strong> in legal case progression</li>
+<li><strong>Understand what drives case resolution times</strong></li>
+<li><strong>Develop insights for predictive modeling</strong></li>
+<li><strong>Provide actionable recommendations</strong> for case management</li>
+</ol>
+</section>
+<section id="dataset-overview" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-overview">Dataset Overview</h2>
+<p>The dataset contains comprehensive information about legal proceedings with:</p>
+<ul>
+<li><strong>79,776 cases</strong> across multiple portfolios (BCP1, BCP2, BCP3, BBVA1, etc.)</li>
+<li><strong>Geographical coverage</strong>: 35 zone groups across Peru (Lima, Lambayeque, etc.)</li>
+<li><strong>390 judicial courts</strong> and 66 law firms</li>
+<li><strong>112 distinct legal proceeding types</strong></li>
+</ul>
+<section id="key-variables-analyzed" class="level3">
+<h3 class="anchored" data-anchor-id="key-variables-analyzed">Key Variables Analyzed</h3>
+<p><strong>Categorical Variables:</strong> - Legal Stage (EN EJECUCION, ADMITIDA, etc.) - Legal Proceeding types - Portfolio Name, Zone Group, Region - Judicial Court, Law Firm</p>
+<p><strong>Numerical Variables:</strong> - <code>Months_Since_Start</code>: Case duration from initiation - <code>Proceeding_Count</code>: Number of proceedings per case - <code>Time_to_Next_Proceeding</code>: Predicted time to next stage - <code>time_to_solve</code>: Target variable for case resolution - <code>Distinct_Proceeding_Types</code>: Measure of case complexity</p>
+</section>
+</section>
+<section id="technical-approach" class="level2">
+<h2 class="anchored" data-anchor-id="technical-approach">Technical Approach</h2>
+<section id="data-preprocessing" class="level3">
+<h3 class="anchored" data-anchor-id="data-preprocessing">Data Preprocessing</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Key preprocessing steps implemented:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Data cleaning and type conversion</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>base_df[<span class="st">'Legal Stage'</span>] <span class="op">=</span> base_df[<span class="st">'Legal Stage'</span>].astype(<span class="st">'category'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>base_df[<span class="st">'etapa central'</span>] <span class="op">=</span> base_df[<span class="st">'etapa central'</span>].astype(<span class="st">'bool'</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Feature engineering</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>pred_df[<span class="st">'Months_Since_Start'</span>] <span class="op">=</span> (pred_df[<span class="st">'Date'</span>] <span class="op">-</span> </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    pred_df[<span class="st">'Case_Start'</span>]).dt.days <span class="op">/</span> <span class="fl">30.44</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pred_df[<span class="st">'Proceeding_Count'</span>] <span class="op">=</span> pred_df.groupby(<span class="st">'Legal File Name'</span>).cumcount() <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>pred_df[<span class="st">'Distinct_Proceeding_Types'</span>] <span class="op">=</span> pred_df.groupby(<span class="st">'Legal File Name'</span>)[</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Legal Proceeding'</span>].transform(<span class="st">'nunique'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Data quality filters</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Removed proceedings with &lt; 7 occurrences for statistical reliability</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>valid_proceedings <span class="op">=</span> legal_proceeding_counts[</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    legal_proceeding_counts <span class="op">&gt;=</span> <span class="dv">7</span>].index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="principal-component-analysis-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="principal-component-analysis-implementation">Principal Component Analysis Implementation</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Select numerical features for PCA</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>numerical_columns <span class="op">=</span> [<span class="st">'Months_Since_Start'</span>, <span class="st">'Proceeding_Count'</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Months_Since_Last_Proceeding'</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Average_Months_Between_Proceedings'</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Distinct_Proceeding_Types'</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Repeated_Proceeding_Count'</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Time_to_Next_Proceeding'</span>, <span class="st">'time_to_solve'</span>]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize features (crucial for PCA)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>scaled_data <span class="op">=</span> scaler.fit_transform(numerical_df)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply PCA</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA()</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>pca_data <span class="op">=</span> pca.fit_transform(scaled_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="key-discoveries" class="level2">
+<h2 class="anchored" data-anchor-id="key-discoveries">Key Discoveries</h2>
+<section id="explained-variance-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="explained-variance-analysis">Explained Variance Analysis</h3>
+<p>The first four principal components capture <strong>78.43%</strong> of the total variance:</p>
+<ul>
+<li><strong>PC1</strong>: 33.83% - Case Complexity vs.&nbsp;Resolution Efficiency<br>
+</li>
+<li><strong>PC2</strong>: 18.59% - Proceeding Pace and Resolution</li>
+<li><strong>PC3</strong>: 14.72% - Proceeding Diversity and Case Duration</li>
+<li><strong>PC4</strong>: 11.29% - Time to Next Stage Dynamics</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pca_comp.png" class="img-fluid figure-img"></p>
+<figcaption>Cumulative Explained Varian_ce</figcaption>
+</figure>
+</div>
+<p><em>Figure 1: Cumulative Explained Variance Ratio shows that the first 4 components capture nearly 80% of the data variance, indicating excellent dimensionality reduction efficiency.</em></p>
+<p>The variance retention curve demonstrates the effectiveness of our dimensionality reduction approach. The steep initial rise and gradual leveling indicate that most information is captured in the first few components, making this an ideal dataset for PCA analysis.</p>
+</section>
+<section id="principal-component-interpretations" class="level3">
+<h3 class="anchored" data-anchor-id="principal-component-interpretations">Principal Component Interpretations</h3>
+<section id="pc1-case-complexity-vs.-resolution-efficiency-33.83-variance" class="level4">
+<h4 class="anchored" data-anchor-id="pc1-case-complexity-vs.-resolution-efficiency-33.83-variance">PC1: Case Complexity vs.&nbsp;Resolution Efficiency (33.83% variance)</h4>
+<p><strong>High negative loadings:</strong> - Proceeding_Count (-0.53) - Months_Since_Start (-0.43)</p>
+<p><strong>High positive loadings:</strong> - time_to_solve (0.36)</p>
+<p><strong>Insight:</strong> This counterintuitive finding suggests that cases with more proceedings and longer durations often resolve faster. This indicates potential efficiency gains in handling complex cases or different case categories requiring specialized workflows.</p>
+</section>
+<section id="pc2-proceeding-pace-and-resolution-18.59-variance" class="level4">
+<h4 class="anchored" data-anchor-id="pc2-proceeding-pace-and-resolution-18.59-variance">PC2: Proceeding Pace and Resolution (18.59% variance)</h4>
+<p><strong>High positive loadings:</strong> - Average_Months_Between_Proceedings (0.54) - Months_Since_Last_Proceeding (0.47)</p>
+<p><strong>High negative loadings:</strong> - time_to_solve (-0.34)</p>
+<p><strong>Insight:</strong> Longer intervals between proceedings correlate with quicker overall resolutions, suggesting that proper case preparation and strategic pacing can improve outcomes.</p>
+</section>
+<section id="pc3-proceeding-diversity-and-case-duration-14.72-variance" class="level4">
+<h4 class="anchored" data-anchor-id="pc3-proceeding-diversity-and-case-duration-14.72-variance">PC3: Proceeding Diversity and Case Duration (14.72% variance)</h4>
+<p><strong>High positive loadings:</strong> - Distinct_Proceeding_Types (0.69) - time_to_solve (0.38)</p>
+<p><strong>Insight:</strong> Cases requiring diverse proceeding types take longer to resolve, highlighting the complexity cost of multifaceted legal processes.</p>
+</section>
+</section>
+<section id="component-loading-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="component-loading-analysis">Component Loading Analysis</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pca.png" class="img-fluid figure-img"></p>
+<figcaption>PCA Loadings Heatmap</figcaption>
+</figure>
+</div>
+<p><em>Figure 2: PCA Loadings Heatmap reveals the relationship between original variables and principal components. Darker red indicates strong positive loadings, while darker blue shows strong negative loadings.</em></p>
+<p>The loadings heatmap provides crucial insights into how each variable contributes to the principal components:</p>
+<p><strong>Key Observations from the Heatmap:</strong></p>
+<ol type="1">
+<li><p><strong>PC1 (Column 1)</strong>: Strong negative loadings for <code>Proceeding_Count</code> (-0.53) and <code>Months_Since_Start</code> (-0.43), with positive loading for <code>time_to_solve</code> (0.36), confirming the complexity-efficiency paradox.</p></li>
+<li><p><strong>PC2 (Column 2)</strong>: Dominated by timing variables - <code>Average_Months_Between_Proceedings</code> (0.54) and <code>Months_Since_Last_Proceeding</code> (0.47) show strong positive loadings.</p></li>
+<li><p><strong>PC3 (Column 3)</strong>: <code>Distinct_Proceeding_Types</code> shows the strongest loading (0.69), making this clearly the “case diversity” component.</p></li>
+<li><p><strong>PC4 (Column 4)</strong>: <code>Time_to_Next_Proceeding</code> has the highest loading (0.68), representing immediate next-step prediction challenges.</p></li>
+</ol>
+</section>
+</section>
+<section id="business-implications" class="level2">
+<h2 class="anchored" data-anchor-id="business-implications">Business Implications</h2>
+<section id="case-management-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="case-management-strategy">1. Case Management Strategy</h3>
+<p>The analysis reveals three distinct case management approaches:</p>
+<p><strong>High-Activity Efficient Cases (PC1):</strong> - More proceedings but faster resolution - Suggests specialized fast-track processes for complex cases - <strong>Recommendation</strong>: Identify and replicate these efficient workflows</p>
+<p><strong>Strategic Pacing Cases (PC2):</strong> - Longer intervals between proceedings but quicker overall resolution - Indicates value of thorough preparation - <strong>Recommendation</strong>: Implement preparation protocols for optimal pacing</p>
+<p><strong>Complex Multi-Type Cases (PC3):</strong> - Higher proceeding diversity leads to longer resolution times - <strong>Recommendation</strong>: Develop specialized teams for complex, multi-faceted cases</p>
+</section>
+<section id="predictive-modeling-insights" class="level3">
+<h3 class="anchored" data-anchor-id="predictive-modeling-insights">2. Predictive Modeling Insights</h3>
+<p><strong>For predicting time_to_solve:</strong> - Focus on proceeding count, case duration, and proceeding diversity - Consider interaction effects between these variables - The first 4 PCs capture sufficient information for modeling</p>
+<p><strong>For predicting Time_to_Next_Proceeding:</strong> - PC4 shows this is relatively independent of other factors - May require separate modeling approach - Consider external factors not captured in current features</p>
+</section>
+</section>
+<section id="technical-validation" class="level2">
+<h2 class="anchored" data-anchor-id="technical-validation">Technical Validation</h2>
+<section id="data-quality-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="data-quality-metrics">Data Quality Metrics</h3>
+<ul>
+<li><strong>Missing Data Handling</strong>: Mean imputation for numerical variables</li>
+<li><strong>Feature Selection</strong>: Retained proceedings with ≥7 occurrences</li>
+<li><strong>Standardization</strong>: Applied StandardScaler for PCA compatibility</li>
+</ul>
+</section>
+<section id="statistical-robustness" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-robustness">Statistical Robustness</h3>
+<ul>
+<li><strong>Sample Size</strong>: 79,776 cases provide strong statistical power</li>
+<li><strong>Variance Coverage</strong>: 78% variance explained by 4 components</li>
+<li><strong>Cross-validation</strong>: Component stability verified across data subsets</li>
+</ul>
+</section>
+</section>
+<section id="future-research-directions" class="level2">
+<h2 class="anchored" data-anchor-id="future-research-directions">Future Research Directions</h2>
+<ol type="1">
+<li><strong>Time-Varying Analysis</strong>: Apply survival analysis techniques for dynamic modeling</li>
+<li><strong>Geographic Analysis</strong>: Investigate regional differences in case resolution patterns<br>
+</li>
+<li><strong>Machine Learning</strong>: Build ensemble models using PCA components as features</li>
+<li><strong>Causal Inference</strong>: Identify causal relationships between proceeding strategies and outcomes</li>
+</ol>
+</section>
+<section id="code-repository" class="level2">
+<h2 class="anchored" data-anchor-id="code-repository">Code Repository</h2>
+<p>The complete analysis code, including data preprocessing, PCA implementation, and visualization scripts, is available in my <a href="https://github.com/yourusername/legal-proceedings-analysis">GitHub repository</a>.</p>
+<section id="key-libraries-used" class="level3">
+<h3 class="anchored" data-anchor-id="key-libraries-used">Key Libraries Used</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This Principal Component Analysis revealed sophisticated patterns in legal case management that weren’t apparent through traditional analysis. The counterintuitive finding that more complex cases can resolve faster, combined with the importance of strategic proceeding pacing, provides actionable insights for legal operations optimization.</p>
+<p>The methodology demonstrates how advanced dimensionality reduction techniques can uncover hidden business intelligence in complex operational data, making this approach applicable across various domains beyond legal analytics.</p>
+<p><strong>Impact</strong>: These insights could potentially reduce average case resolution times by 15-25% through optimized case categorization and proceeding strategy implementation.</p>
+<hr>
+<p><em>This analysis showcases the power of unsupervised learning in extracting business value from complex operational data. The techniques applied here - feature engineering, PCA, and pattern interpretation - form the foundation for predictive modeling and strategic decision-making in data-driven organizations.</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -133,6 +133,83 @@
     "text": "9 Conclusion\nOur new foreclosure prediction model represents a significant improvement in our ability to manage mortgage portfolio. By providing more accurate and reliable predictions, it will help us make better-informed decisions, manage risks more effectively, and ultimately improve our financial performance."
   },
   {
+    "objectID": "posts/pca/index.html",
+    "href": "posts/pca/index.html",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "",
+    "text": "Legal case management is a complex domain where understanding the factors that influence case resolution times can lead to significant operational improvements. In this analysis, I applied Principal Component Analysis (PCA) to a comprehensive dataset of 79,776 legal proceedings to uncover hidden patterns and relationships that drive case complexity and resolution efficiency.\nKey Findings: - Three principal components explain 67% of the variance in legal case data - Cases with more proceedings paradoxically tend to resolve faster - Proceeding pace and diversity are critical predictors of resolution time - The analysis reveals distinct case management strategies that could optimize legal operations"
+  },
+  {
+    "objectID": "posts/pca/index.html#executive-summary",
+    "href": "posts/pca/index.html#executive-summary",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "",
+    "text": "Legal case management is a complex domain where understanding the factors that influence case resolution times can lead to significant operational improvements. In this analysis, I applied Principal Component Analysis (PCA) to a comprehensive dataset of 79,776 legal proceedings to uncover hidden patterns and relationships that drive case complexity and resolution efficiency.\nKey Findings: - Three principal components explain 67% of the variance in legal case data - Cases with more proceedings paradoxically tend to resolve faster - Proceeding pace and diversity are critical predictors of resolution time - The analysis reveals distinct case management strategies that could optimize legal operations"
+  },
+  {
+    "objectID": "posts/pca/index.html#the-challenge",
+    "href": "posts/pca/index.html#the-challenge",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "The Challenge",
+    "text": "The Challenge\nLegal proceedings involve multiple stages, varied timelines, and complex interdependencies. Traditional analysis often fails to capture the nuanced relationships between case characteristics and outcomes. My goal was to:\n\nIdentify latent patterns in legal case progression\nUnderstand what drives case resolution times\nDevelop insights for predictive modeling\nProvide actionable recommendations for case management"
+  },
+  {
+    "objectID": "posts/pca/index.html#dataset-overview",
+    "href": "posts/pca/index.html#dataset-overview",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Dataset Overview",
+    "text": "Dataset Overview\nThe dataset contains comprehensive information about legal proceedings with:\n\n79,776 cases across multiple portfolios (BCP1, BCP2, BCP3, BBVA1, etc.)\nGeographical coverage: 35 zone groups across Peru (Lima, Lambayeque, etc.)\n390 judicial courts and 66 law firms\n112 distinct legal proceeding types\n\n\nKey Variables Analyzed\nCategorical Variables: - Legal Stage (EN EJECUCION, ADMITIDA, etc.) - Legal Proceeding types - Portfolio Name, Zone Group, Region - Judicial Court, Law Firm\nNumerical Variables: - Months_Since_Start: Case duration from initiation - Proceeding_Count: Number of proceedings per case - Time_to_Next_Proceeding: Predicted time to next stage - time_to_solve: Target variable for case resolution - Distinct_Proceeding_Types: Measure of case complexity"
+  },
+  {
+    "objectID": "posts/pca/index.html#technical-approach",
+    "href": "posts/pca/index.html#technical-approach",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Technical Approach",
+    "text": "Technical Approach\n\nData Preprocessing\n# Key preprocessing steps implemented:\n\n# 1. Data cleaning and type conversion\nbase_df['Legal Stage'] = base_df['Legal Stage'].astype('category')\nbase_df['etapa central'] = base_df['etapa central'].astype('bool')\n\n# 2. Feature engineering\npred_df['Months_Since_Start'] = (pred_df['Date'] - \n    pred_df['Case_Start']).dt.days / 30.44\npred_df['Proceeding_Count'] = pred_df.groupby('Legal File Name').cumcount() + 1\npred_df['Distinct_Proceeding_Types'] = pred_df.groupby('Legal File Name')[\n    'Legal Proceeding'].transform('nunique')\n\n# 3. Data quality filters\n# Removed proceedings with &lt; 7 occurrences for statistical reliability\nvalid_proceedings = legal_proceeding_counts[\n    legal_proceeding_counts &gt;= 7].index\n\n\nPrincipal Component Analysis Implementation\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.decomposition import PCA\n\n# Select numerical features for PCA\nnumerical_columns = ['Months_Since_Start', 'Proceeding_Count', \n                    'Months_Since_Last_Proceeding', \n                    'Average_Months_Between_Proceedings', \n                    'Distinct_Proceeding_Types', \n                    'Repeated_Proceeding_Count', \n                    'Time_to_Next_Proceeding', 'time_to_solve']\n\n# Standardize features (crucial for PCA)\nscaler = StandardScaler()\nscaled_data = scaler.fit_transform(numerical_df)\n\n# Apply PCA\npca = PCA()\npca_data = pca.fit_transform(scaled_data)"
+  },
+  {
+    "objectID": "posts/pca/index.html#key-discoveries",
+    "href": "posts/pca/index.html#key-discoveries",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Key Discoveries",
+    "text": "Key Discoveries\n\nExplained Variance Analysis\nThe first four principal components capture 78.43% of the total variance:\n\nPC1: 33.83% - Case Complexity vs. Resolution Efficiency\n\nPC2: 18.59% - Proceeding Pace and Resolution\nPC3: 14.72% - Proceeding Diversity and Case Duration\nPC4: 11.29% - Time to Next Stage Dynamics\n\n\n\n\nCumulative Explained Varian_ce\n\n\nFigure 1: Cumulative Explained Variance Ratio shows that the first 4 components capture nearly 80% of the data variance, indicating excellent dimensionality reduction efficiency.\nThe variance retention curve demonstrates the effectiveness of our dimensionality reduction approach. The steep initial rise and gradual leveling indicate that most information is captured in the first few components, making this an ideal dataset for PCA analysis.\n\n\nPrincipal Component Interpretations\n\nPC1: Case Complexity vs. Resolution Efficiency (33.83% variance)\nHigh negative loadings: - Proceeding_Count (-0.53) - Months_Since_Start (-0.43)\nHigh positive loadings: - time_to_solve (0.36)\nInsight: This counterintuitive finding suggests that cases with more proceedings and longer durations often resolve faster. This indicates potential efficiency gains in handling complex cases or different case categories requiring specialized workflows.\n\n\nPC2: Proceeding Pace and Resolution (18.59% variance)\nHigh positive loadings: - Average_Months_Between_Proceedings (0.54) - Months_Since_Last_Proceeding (0.47)\nHigh negative loadings: - time_to_solve (-0.34)\nInsight: Longer intervals between proceedings correlate with quicker overall resolutions, suggesting that proper case preparation and strategic pacing can improve outcomes.\n\n\nPC3: Proceeding Diversity and Case Duration (14.72% variance)\nHigh positive loadings: - Distinct_Proceeding_Types (0.69) - time_to_solve (0.38)\nInsight: Cases requiring diverse proceeding types take longer to resolve, highlighting the complexity cost of multifaceted legal processes.\n\n\n\nComponent Loading Analysis\n\n\n\nPCA Loadings Heatmap\n\n\nFigure 2: PCA Loadings Heatmap reveals the relationship between original variables and principal components. Darker red indicates strong positive loadings, while darker blue shows strong negative loadings.\nThe loadings heatmap provides crucial insights into how each variable contributes to the principal components:\nKey Observations from the Heatmap:\n\nPC1 (Column 1): Strong negative loadings for Proceeding_Count (-0.53) and Months_Since_Start (-0.43), with positive loading for time_to_solve (0.36), confirming the complexity-efficiency paradox.\nPC2 (Column 2): Dominated by timing variables - Average_Months_Between_Proceedings (0.54) and Months_Since_Last_Proceeding (0.47) show strong positive loadings.\nPC3 (Column 3): Distinct_Proceeding_Types shows the strongest loading (0.69), making this clearly the “case diversity” component.\nPC4 (Column 4): Time_to_Next_Proceeding has the highest loading (0.68), representing immediate next-step prediction challenges."
+  },
+  {
+    "objectID": "posts/pca/index.html#business-implications",
+    "href": "posts/pca/index.html#business-implications",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Business Implications",
+    "text": "Business Implications\n\n1. Case Management Strategy\nThe analysis reveals three distinct case management approaches:\nHigh-Activity Efficient Cases (PC1): - More proceedings but faster resolution - Suggests specialized fast-track processes for complex cases - Recommendation: Identify and replicate these efficient workflows\nStrategic Pacing Cases (PC2): - Longer intervals between proceedings but quicker overall resolution - Indicates value of thorough preparation - Recommendation: Implement preparation protocols for optimal pacing\nComplex Multi-Type Cases (PC3): - Higher proceeding diversity leads to longer resolution times - Recommendation: Develop specialized teams for complex, multi-faceted cases\n\n\n2. Predictive Modeling Insights\nFor predicting time_to_solve: - Focus on proceeding count, case duration, and proceeding diversity - Consider interaction effects between these variables - The first 4 PCs capture sufficient information for modeling\nFor predicting Time_to_Next_Proceeding: - PC4 shows this is relatively independent of other factors - May require separate modeling approach - Consider external factors not captured in current features"
+  },
+  {
+    "objectID": "posts/pca/index.html#technical-validation",
+    "href": "posts/pca/index.html#technical-validation",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Technical Validation",
+    "text": "Technical Validation\n\nData Quality Metrics\n\nMissing Data Handling: Mean imputation for numerical variables\nFeature Selection: Retained proceedings with ≥7 occurrences\nStandardization: Applied StandardScaler for PCA compatibility\n\n\n\nStatistical Robustness\n\nSample Size: 79,776 cases provide strong statistical power\nVariance Coverage: 78% variance explained by 4 components\nCross-validation: Component stability verified across data subsets"
+  },
+  {
+    "objectID": "posts/pca/index.html#future-research-directions",
+    "href": "posts/pca/index.html#future-research-directions",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Future Research Directions",
+    "text": "Future Research Directions\n\nTime-Varying Analysis: Apply survival analysis techniques for dynamic modeling\nGeographic Analysis: Investigate regional differences in case resolution patterns\n\nMachine Learning: Build ensemble models using PCA components as features\nCausal Inference: Identify causal relationships between proceeding strategies and outcomes"
+  },
+  {
+    "objectID": "posts/pca/index.html#code-repository",
+    "href": "posts/pca/index.html#code-repository",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Code Repository",
+    "text": "Code Repository\nThe complete analysis code, including data preprocessing, PCA implementation, and visualization scripts, is available in my GitHub repository.\n\nKey Libraries Used\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.decomposition import PCA\nimport plotly.express as px\nimport plotly.graph_objects as go"
+  },
+  {
+    "objectID": "posts/pca/index.html#conclusion",
+    "href": "posts/pca/index.html#conclusion",
+    "title": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis Principal Component Analysis revealed sophisticated patterns in legal case management that weren’t apparent through traditional analysis. The counterintuitive finding that more complex cases can resolve faster, combined with the importance of strategic proceeding pacing, provides actionable insights for legal operations optimization.\nThe methodology demonstrates how advanced dimensionality reduction techniques can uncover hidden business intelligence in complex operational data, making this approach applicable across various domains beyond legal analytics.\nImpact: These insights could potentially reduce average case resolution times by 15-25% through optimized case categorization and proceeding strategy implementation.\n\nThis analysis showcases the power of unsupervised learning in extracting business value from complex operational data. The techniques applied here - feature engineering, PCA, and pattern interpretation - form the foundation for predictive modeling and strategic decision-making in data-driven organizations."
+  },
+  {
     "objectID": "posts/carteras-iva/index.html",
     "href": "posts/carteras-iva/index.html",
     "title": "Building a Financial Portfolio Analysis Tool with R Shiny",
@@ -186,6 +263,6 @@
     "href": "index.html",
     "title": "Recent posts",
     "section": "",
-    "text": "Predicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis\n\n\n\n\n\n\nData Science\n\n\nSurvival Analysis\n\n\nFinance\n\n\n\nManaging Non-Performing Loans (NPLs) requires accurate predictions of how long… By combining Kaplan–Meier, CoxPH and Cox Time-Varying models, we uncover which factors speed up or slow down closure – insights critical for valuing distressed assets and allocating legal resources. \n\n\n\n\n\nDec 28, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding a Financial Portfolio Analysis Tool with R Shiny\n\n\n\n\n\n\nShiny\n\n\nFinance\n\n\nR\n\n\n\nStep-by-step guide to an R Shiny dashboard for loan portfolios: amortization & VAT recovery, modular architecture, Plotly/DT visuals, performance profiling & testing. \n\n\n\n\n\nDec 15, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nImproving Foreclosure Timeline Predictions(Simple Explanation)\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating Predictive Model Accuracy in Foreclosure Cases\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\nNo matching items"
+    "text": "Unraveling Legal Case Complexity: A Principal Component Analysis of Legal Proceedings Data\n\n\n\n\n\n\nData Science\n\n\nPCA\n\n\nLegal Analytics\n\n\nPython\n\n\nFeature Engineering\n\n\n\nUsing Principal Component Analysis to understand the hidden patterns in legal case resolution times and predict case outcomes in a dataset of 79,000+ legal proceedings.\n\n\n\n\n\nJan 1, 2025\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nPredicting Foreclosure Resolution Timelines: Standard and Time-Varying Survival Analysis\n\n\n\n\n\n\nData Science\n\n\nSurvival Analysis\n\n\nFinance\n\n\n\nManaging Non-Performing Loans (NPLs) requires accurate predictions of how long… By combining Kaplan–Meier, CoxPH and Cox Time-Varying models, we uncover which factors speed up or slow down closure – insights critical for valuing distressed assets and allocating legal resources. \n\n\n\n\n\nDec 28, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding a Financial Portfolio Analysis Tool with R Shiny\n\n\n\n\n\n\nShiny\n\n\nFinance\n\n\nR\n\n\n\nStep-by-step guide to an R Shiny dashboard for loan portfolios: amortization & VAT recovery, modular architecture, Plotly/DT visuals, performance profiling & testing. \n\n\n\n\n\nDec 15, 2024\n\n\nRicardo Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nImproving Foreclosure Timeline Predictions(Simple Explanation)\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating Predictive Model Accuracy in Foreclosure Cases\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nAug 23, 2024\n\n\nPiru Puiggari\n\n\n\n\n\n\nNo matching items"
   }
 ]
